@@ -11,14 +11,14 @@ import FRadioPlayer
 
 // Radio Station
 
-struct RadioStation: Codable {
-    
+struct RadioStation: Codable, Sendable {
+
     var name: String
     var streamURL: String
     var imageURL: String
     var desc: String
     var longDesc: String
-    
+
     init(name: String, streamURL: String, imageURL: String, desc: String, longDesc: String = "") {
         self.name = name
         self.streamURL = streamURL
@@ -35,34 +35,34 @@ extension RadioStation {
 }
 
 extension RadioStation: Equatable {
-    
+
     static func == (lhs: RadioStation, rhs: RadioStation) -> Bool {
         return (lhs.name == rhs.name) && (lhs.streamURL == rhs.streamURL) && (lhs.imageURL == rhs.imageURL) && (lhs.desc == rhs.desc) && (lhs.longDesc == rhs.longDesc)
     }
 }
 
 extension RadioStation {
-    func getImage(completion: @escaping (_ image: UIImage) -> Void) {
-        
-        if imageURL.range(of: "http") != nil, let url = URL(string: imageURL) {
+
+    func getImage() async -> UIImage {
+        if imageURL.hasPrefix("http"), let url = URL(string: imageURL) {
             // load current station image from network
-            UIImage.image(from: url) { image in
-                completion(image ?? #imageLiteral(resourceName: "stationImage"))
-            }
+            let image = await UIImage.image(from: url)
+            return image ?? UIImage(named: "stationImage") ?? UIImage()
         } else {
             // load local station image
-            let image = UIImage(named: imageURL) ?? #imageLiteral(resourceName: "stationImage")
-            completion(image)
+            return UIImage(named: imageURL) ?? UIImage(named: "stationImage") ?? UIImage()
         }
     }
 }
 
 extension RadioStation {
-    
+
+    @MainActor
     var trackName: String {
         FRadioPlayer.shared.currentMetadata?.trackName ?? name
     }
-    
+
+    @MainActor
     var artistName: String {
         FRadioPlayer.shared.currentMetadata?.artistName ?? desc
     }

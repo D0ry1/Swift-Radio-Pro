@@ -12,13 +12,13 @@ import MediaPlayer
 // MARK: - CarPlay Setup
 
 extension AppDelegate {
-    
+
     func setupCarPlay() {
         playableContentManager = MPPlayableContentManager.shared()
-        
+
         playableContentManager?.delegate = self
         playableContentManager?.dataSource = self
-        
+
         StationsManager.shared.addObserver(self)
     }
 }
@@ -26,10 +26,10 @@ extension AppDelegate {
 // MARK: - MPPlayableContentDelegate
 
 extension AppDelegate: MPPlayableContentDelegate {
-    
+
     func playableContentManager(_ contentManager: MPPlayableContentManager, initiatePlaybackOfContentItemAt indexPath: IndexPath, completionHandler: @escaping (Error?) -> Void) {
-        
-        DispatchQueue.main.async {
+
+        Task { @MainActor in
             if indexPath.count == 2 {
                 let station = StationsManager.shared.stations[indexPath[1]]
                 StationsManager.shared.set(station: station)
@@ -38,15 +38,15 @@ extension AppDelegate: MPPlayableContentDelegate {
             completionHandler(nil)
         }
     }
-    
+
     func beginLoadingChildItems(at indexPath: IndexPath, completionHandler: @escaping (Error?) -> Void) {
-        StationsManager.shared.fetch { result in
-            guard case .failure(let error) = result else {
+        Task {
+            do {
+                _ = try await StationsManager.shared.fetch()
                 completionHandler(nil)
-                return
+            } catch {
+                completionHandler(error)
             }
-            
-            completionHandler(error)
         }
     }
 }
@@ -54,43 +54,47 @@ extension AppDelegate: MPPlayableContentDelegate {
 // MARK: - MPPlayableContentDataSource
 
 extension AppDelegate: MPPlayableContentDataSource {
-    
+
     func numberOfChildItems(at indexPath: IndexPath) -> Int {
         if indexPath.indices.count == 0 {
             return 1
         }
-        
+
         return StationsManager.shared.stations.count
     }
-    
+
     func contentItem(at indexPath: IndexPath) -> MPContentItem? {
-        
+
         if indexPath.count == 1 {
             // Tab section
             let item = MPContentItem(identifier: "Stations")
             item.title = "Stations"
             item.isContainer = true
             item.isPlayable = false
-            item.artwork = MPMediaItemArtwork(boundsSize: #imageLiteral(resourceName: "carPlayTab").size, requestHandler: { _ -> UIImage in
-                return #imageLiteral(resourceName: "carPlayTab")
-            })
+            if let tabImage = UIImage(named: "carPlayTab") {
+                item.artwork = MPMediaItemArtwork(boundsSize: tabImage.size, requestHandler: { _ -> UIImage in
+                    return tabImage
+                })
+            }
             return item
         } else if indexPath.count == 2, indexPath.item < StationsManager.shared.stations.count {
-            
+
             // Stations section
             let station = StationsManager.shared.stations[indexPath.item]
-            
+
             let item = MPContentItem(identifier: "\(station.name)")
             item.title = station.name
             item.subtitle = station.desc
             item.isPlayable = true
             item.isStreamingContent = true
-            station.getImage { image in
+
+            Task {
+                let image = await station.getImage()
                 item.artwork = MPMediaItemArtwork(boundsSize: image.size) { _ -> UIImage in
                     return image
                 }
             }
-            
+
             return item
         } else {
             return nil
@@ -101,17 +105,17 @@ extension AppDelegate: MPPlayableContentDataSource {
 // MARK: - StationsManagerObserver
 
 extension AppDelegate: StationsManagerObserver {
-    
+
     func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation]) {
         playableContentManager?.reloadData()
     }
-    
+
     func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?) {
         guard let station = station else {
             playableContentManager?.nowPlayingIdentifiers = []
             return
         }
-        
+
         playableContentManager?.nowPlayingIdentifiers = [station.name]
     }
 }

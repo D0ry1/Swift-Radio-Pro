@@ -12,120 +12,61 @@ enum DataError: Error {
     case urlNotValid, dataNotValid, dataNotFound, fileNotFound, httpResponseNotValid
 }
 
-typealias StationsResult = Result<[RadioStation], Error>
-typealias StationsCompletion = (StationsResult) -> Void
-
 struct DataManager {
-    
-    // Helper struct to get either local or remote JSON
-    
-    static func getStation(completion: @escaping StationsCompletion) {
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            
-            if Config.useLocalStations {
-                loadLocal() { dataResult in
-                    handle(dataResult, completion)
-                }
-            } else {
-                loadHttp { dataResult in
-                    handle(dataResult, completion)
-                }
-            }
+
+    static func getStations() async throws -> [RadioStation] {
+        let data: Data
+
+        if Config.useLocalStations {
+            data = try await loadLocal()
+        } else {
+            data = try await loadHttp()
         }
+
+        return try decode(data)
     }
-    
-    private typealias DataResult = Result<Data?, Error>
-    private typealias DataCompletion = (DataResult) -> Void
-    
-    private static func handle(_ dataResult: DataResult, _ completion: @escaping StationsCompletion) {
-        DispatchQueue.main.async {
-            switch dataResult {
-            case .success(let data):
-                let result = decode(data)
-                completion(result)
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-    
-    private static func decode(_ data: Data?) -> Result<[RadioStation], Error> {
+
+    private static func decode(_ data: Data) throws -> [RadioStation] {
         if Config.debugLog { print("Stations JSON Found") }
-        
-        guard let data = data else {
-            return .failure(DataError.dataNotFound)
-        }
-        
-        let jsonDictionary: [String: [RadioStation]]
-        
-        do {
-            jsonDictionary = try JSONDecoder().decode([String: [RadioStation]].self, from: data)
-        } catch let error {
-            return .failure(error)
-        }
-        
+
+        let jsonDictionary = try JSONDecoder().decode([String: [RadioStation]].self, from: data)
+
         guard let stations = jsonDictionary["station"] else {
-            return .failure(DataError.dataNotValid)
+            throw DataError.dataNotValid
         }
-        
-        return .success(stations)
+
+        return stations
     }
-    
+
     // Load local JSON Data
-    
-    private static func loadLocal(_ completion: DataCompletion) {
+    private static func loadLocal() async throws -> Data {
         guard let filePathURL = Bundle.main.url(forResource: "stations", withExtension: "json") else {
             if Config.debugLog { print("The local JSON file could not be found") }
-            completion(.failure(DataError.fileNotFound))
-            return
+            throw DataError.fileNotFound
         }
-        
-        do {
-            let data = try Data(contentsOf: filePathURL, options: .uncached)
-            completion(.success(data))
-        } catch let error {
-            completion(.failure(error))
-        }
+
+        return try Data(contentsOf: filePathURL, options: .uncached)
     }
-        
+
     // Load http JSON Data
-    private static func loadHttp(_ completion: @escaping DataCompletion) {
+    private static func loadHttp() async throws -> Data {
         guard let url = URL(string: Config.stationsURL) else {
             if Config.debugLog { print("stationsURL not a valid URL") }
-            completion(.failure(DataError.urlNotValid))
-            return
+            throw DataError.urlNotValid
         }
-        
+
         let config = URLSessionConfiguration.default
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
+
         let session = URLSession(configuration: config)
-        
-        // Use URLSession to get data from an NSURL
-        let loadDataTask = session.dataTask(with: url) { data, response, error in
-            
-            if let error = error {
-                if Config.debugLog { print("API ERROR: \(error.localizedDescription)") }
-                completion(.failure(error))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
-                if Config.debugLog { print("API: HTTP status code has unexpected value") }
-                completion(.failure(DataError.httpResponseNotValid))
-                return
-            }
-            
-            guard let data = data else {
-                if Config.debugLog { print("API: No data received") }
-                completion(.failure(DataError.dataNotFound))
-                return
-            }
-            
-            completion(.success(data))
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
+            if Config.debugLog { print("API: HTTP status code has unexpected value") }
+            throw DataError.httpResponseNotValid
         }
-        
-        loadDataTask.resume()
+
+        return data
     }
 }

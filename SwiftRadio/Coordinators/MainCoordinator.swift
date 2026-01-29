@@ -9,6 +9,7 @@
 import UIKit
 import MessageUI
 
+@MainActor
 class MainCoordinator: NavigationCoordinator {
     var childCoordinators: [Coordinator] = []
     let navigationController: UINavigationController
@@ -94,8 +95,9 @@ extension MainCoordinator: NowPlayingViewControllerDelegate {
     }
     
     func didTapShareButton(_ nowPlayingViewController: NowPlayingViewController, station: RadioStation, artworkURL: URL?) {
-        ShareActivity.activityController(station: station, artworkURL: artworkURL, sourceView: nowPlayingViewController.view) { [weak nowPlayingViewController] controller in
-            nowPlayingViewController?.present(controller, animated: true, completion: nil)
+        Task {
+            let controller = await ShareActivity.activityController(station: station, artworkURL: artworkURL, sourceView: nowPlayingViewController.view)
+            nowPlayingViewController.present(controller, animated: true, completion: nil)
         }
     }
 }
