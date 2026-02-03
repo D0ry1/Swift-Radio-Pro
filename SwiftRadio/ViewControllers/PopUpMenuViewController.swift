@@ -8,6 +8,7 @@
 
 import UIKit
 
+@MainActor
 protocol PopUpMenuViewControllerDelegate: AnyObject {
     func didTapWebsiteButton(_ popUpMenuViewController: PopUpMenuViewController)
     func didTapAboutButton(_ popUpMenuViewController: PopUpMenuViewController)

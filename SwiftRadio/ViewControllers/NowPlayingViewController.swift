@@ -12,6 +12,7 @@ import AVKit
 import Spring
 import FRadioPlayer
 
+@MainActor
 protocol NowPlayingViewControllerDelegate: AnyObject {
     func didTapCompanyButton(_ nowPlayingViewController: NowPlayingViewController)
     func didTapInfoButton(_ nowPlayingViewController: NowPlayingViewController, station: RadioStation)

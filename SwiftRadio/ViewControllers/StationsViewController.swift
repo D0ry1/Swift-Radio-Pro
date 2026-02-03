@@ -9,6 +9,7 @@
 import UIKit
 import FRadioPlayer
 
+@MainActor
 protocol StationsViewControllerDelegate: AnyObject {
     func pushNowPlayingController(_ stationsViewController: StationsViewController, newStation: Bool)
     func presentPopUpMenuController(_ stationsViewController: StationsViewController)

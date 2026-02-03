@@ -17,9 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var coordinator: MainCoordinator?
 
-    // CarPlay
-    var playableContentManager: MPPlayableContentManager?
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         // FRadioPlayer config
@@ -36,12 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().barStyle = .black
         UINavigationBar.appearance().tintColor = .white
         UINavigationBar.appearance().prefersLargeTitles = true
-
-        // `CarPlay` is defined only in SwiftRadio-CarPlay target:
-        // Build Settings > Swift Compiler - Custom Flags
-        #if CarPlay
-        setupCarPlay()
-        #endif
 
         // Start the coordinator
         coordinator = MainCoordinator(navigationController: UINavigationController())
@@ -65,25 +56,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Get the shared MPRemoteCommandCenter
         let commandCenter = MPRemoteCommandCenter.shared()
 
-        // Add handler for Play Command
+        // Enable and add handler for Play Command
+        commandCenter.playCommand.isEnabled = true
         commandCenter.playCommand.addTarget { event in
             FRadioPlayer.shared.play()
             return .success
         }
 
-        // Add handler for Pause Command
+        // Enable pause command but use stop for live streams
+        commandCenter.pauseCommand.isEnabled = true
         commandCenter.pauseCommand.addTarget { event in
-            FRadioPlayer.shared.pause()
+            FRadioPlayer.shared.stop()
             return .success
         }
 
-        // Add handler for Toggle Command
+        // Also enable stop command for completeness
+        commandCenter.stopCommand.isEnabled = true
+        commandCenter.stopCommand.addTarget { event in
+            FRadioPlayer.shared.stop()
+            return .success
+        }
+
+        // Enable toggle command (play/stop for live streams)
+        commandCenter.togglePlayPauseCommand.isEnabled = true
         commandCenter.togglePlayPauseCommand.addTarget { event in
-            FRadioPlayer.shared.togglePlaying()
+            if FRadioPlayer.shared.isPlaying {
+                FRadioPlayer.shared.stop()
+            } else {
+                FRadioPlayer.shared.play()
+            }
             return .success
         }
 
-        // Add handler for Next Command
+        // Enable and add handler for Next Command
+        commandCenter.nextTrackCommand.isEnabled = true
         commandCenter.nextTrackCommand.addTarget { event in
             Task { @MainActor in
                 StationsManager.shared.setNext()
@@ -91,7 +97,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return .success
         }
 
-        // Add handler for Previous Command
+        // Enable and add handler for Previous Command
+        commandCenter.previousTrackCommand.isEnabled = true
         commandCenter.previousTrackCommand.addTarget { event in
             Task { @MainActor in
                 StationsManager.shared.setPrevious()

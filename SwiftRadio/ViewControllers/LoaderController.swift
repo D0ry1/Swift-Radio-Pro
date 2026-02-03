@@ -8,6 +8,7 @@
 
 import UIKit
 
+@MainActor
 protocol LoaderControllerDelegate: AnyObject {
     func didFinishLoading(_ controller: LoaderController, stations: [RadioStation])
 }
@@ -20,7 +21,8 @@ class LoaderController: BaseController {
     private let manager = StationsManager.shared
 
     private let activityIndicatorView: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView(style: .white)
+        let view = UIActivityIndicatorView(style: .medium)
+        view.color = .white
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

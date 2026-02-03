@@ -9,6 +9,7 @@
 import UIKit
 import MessageUI
 
+@MainActor
 protocol AboutViewControllerDelegate: AnyObject {
     func didTapEmailButton(_ aboutViewController: AboutViewController)
     func didTapWebsiteButton(_ aboutViewController: AboutViewController)

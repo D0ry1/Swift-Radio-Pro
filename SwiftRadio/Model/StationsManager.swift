@@ -10,6 +10,7 @@ import UIKit
 import FRadioPlayer
 import MediaPlayer
 
+@MainActor
 protocol StationsManagerObserver: AnyObject {
     func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation])
     func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?)
@@ -173,8 +174,14 @@ extension StationsManager {
             nowPlayingInfo[MPMediaItemPropertyTitle] = trackName
         }
 
+        // Set playback rate (1.0 = playing, 0.0 = paused) - controls play/pause button icon
+        let isPlaying = player.isPlaying
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
+        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+
         // Set the metadata
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .stopped
     }
 }
 
@@ -203,5 +210,19 @@ extension StationsManager: FRadioPlayerObserver {
 
             updateLockScreen(with: image)
         }
+    }
+
+    nonisolated func radioPlayer(_ player: FRadioPlayer, playbackStateDidChange state: FRadioPlayer.PlaybackState) {
+        Task { @MainActor in
+            updatePlaybackState()
+        }
+    }
+
+    private func updatePlaybackState() {
+        guard var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo else { return }
+        let isPlaying = player.isPlaying
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .stopped
     }
 }
