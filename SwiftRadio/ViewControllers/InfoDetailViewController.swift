@@ -51,6 +51,10 @@ class InfoDetailViewController: UIViewController {
 
     func setupStationLogo() {
 
+        // Make image view square and properly scaled
+        stationImageView.contentMode = .scaleAspectFit
+        stationImageView.clipsToBounds = true
+
         // Display Station Image/Logo
         Task {
             let image = await currentStation.getImage()

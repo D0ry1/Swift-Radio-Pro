@@ -15,9 +15,10 @@ class StationTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
         NSLayoutConstraint.activate([
             imageView.heightAnchor.constraint(equalToConstant: 75),
-            imageView.widthAnchor.constraint(equalToConstant: 110)
+            imageView.widthAnchor.constraint(equalToConstant: 75)
         ])
         return imageView
     }()
