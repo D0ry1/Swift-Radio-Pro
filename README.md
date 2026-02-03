@@ -1,6 +1,6 @@
 # The Gates Radio Station
 
-A school radio station app for **The Gates Primary School**, built on the excellent [Swift Radio Pro](https://github.com/swiftcodex/Swift-Radio-Pro) open source project.
+A school radio station app for **The Gates Primary School**, built on the excellent [Swift Radio Pro](https://github.com/analogcode/Swift-Radio-Pro) open source project.
 
 <p align="center">
     <img alt="Swift Radio" src="https://fethica.com/assets/img/web/swift-radio.jpg">
@@ -44,7 +44,7 @@ Station fields:
 **Original Swift Radio Pro Team:**
 - [Fethi El Hassasna](https://fethica.com) - Co-organizer & lead developer ([@fethica](https://twitter.com/fethica))
 - [Matthew Fecher](http://matthewfecher.com) - Original creator, [AudioKit Pro](https://audiokitpro.com) ([@analogMatthew](http://twitter.com/analogMatthew))
-- [All contributors](https://github.com/swiftcodex/Swift-Radio-Pro/graphs/contributors)
+- [All contributors](https://github.com/analogcode/Swift-Radio-Pro/graphs/contributors)
 
 Forked and customized for The Gates Primary School.
 
@@ -66,4 +66,4 @@ A: Use domain names (e.g., "http://mystream.com/rock") instead of IP addresses f
 
 ## License
 
-This project is based on [Swift Radio Pro](https://github.com/swiftcodex/Swift-Radio-Pro), an open source project. See the original repository for license details.
+This project is based on [Swift Radio Pro](https://github.com/analogcode/Swift-Radio-Pro), an open source project. See the original repository for license details.
