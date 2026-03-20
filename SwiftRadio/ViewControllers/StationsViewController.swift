@@ -13,6 +13,7 @@ import FRadioPlayer
 protocol StationsViewControllerDelegate: AnyObject {
     func pushNowPlayingController(_ stationsViewController: StationsViewController, newStation: Bool)
     func presentPopUpMenuController(_ stationsViewController: StationsViewController)
+    func presentPreviousShows(_ stationsViewController: StationsViewController)
 }
 
 @MainActor
@@ -69,6 +70,9 @@ class StationsViewController: BaseController, Handoffable {
 
         // NavigationBar items
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon-hamburger"), style: .plain, target: self, action: #selector(handleMenuTap))
+
+        // Previous Shows button in table header
+        setupPreviousShowsHeader()
 
         // Setup Player
         player.addObserver(self)
@@ -142,6 +146,35 @@ class StationsViewController: BaseController, Handoffable {
 
     @objc func handleMenuTap() {
         delegate?.presentPopUpMenuController(self)
+    }
+
+    @objc func handlePreviousShowsTap() {
+        delegate?.presentPreviousShows(self)
+    }
+
+    private func setupPreviousShowsHeader() {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 50))
+        headerView.backgroundColor = .clear
+
+        let button = UIButton(type: .system)
+        button.setTitle("Previous Shows", for: .normal)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
+        button.tintColor = .white
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.15)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handlePreviousShowsTap), for: .touchUpInside)
+
+        headerView.addSubview(button)
+
+        NSLayoutConstraint.activate([
+            button.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            button.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            button.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            button.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        tableView.tableHeaderView = headerView
     }
 
     func nowPlayingPressed(_ sender: UIButton) {

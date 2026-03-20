@@ -63,10 +63,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return .success
         }
 
-        // Enable pause command but use stop for live streams
+        // Enable pause command - pause for on-demand, stop for live streams
         commandCenter.pauseCommand.isEnabled = true
         commandCenter.pauseCommand.addTarget { event in
-            FRadioPlayer.shared.stop()
+            if FRadioPlayer.shared.isSeekable {
+                FRadioPlayer.shared.pause()
+            } else {
+                FRadioPlayer.shared.stop()
+            }
             return .success
         }
 
@@ -77,14 +81,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return .success
         }
 
-        // Enable toggle command (play/stop for live streams)
+        // Enable toggle command
         commandCenter.togglePlayPauseCommand.isEnabled = true
         commandCenter.togglePlayPauseCommand.addTarget { event in
             if FRadioPlayer.shared.isPlaying {
-                FRadioPlayer.shared.stop()
+                if FRadioPlayer.shared.isSeekable {
+                    FRadioPlayer.shared.pause()
+                } else {
+                    FRadioPlayer.shared.stop()
+                }
             } else {
                 FRadioPlayer.shared.play()
             }
+            return .success
+        }
+
+        // Enable seek for on-demand content
+        commandCenter.changePlaybackPositionCommand.isEnabled = true
+        commandCenter.changePlaybackPositionCommand.addTarget { event in
+            guard let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
+                return .commandFailed
+            }
+            FRadioPlayer.shared.seek(to: positionEvent.positionTime)
             return .success
         }
 

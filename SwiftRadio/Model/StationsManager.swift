@@ -177,7 +177,13 @@ extension StationsManager {
         // Set playback rate (1.0 = playing, 0.0 = paused) - controls play/pause button icon
         let isPlaying = player.isPlaying
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
-        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+
+        let isOnDemand = player.isSeekable
+        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = !isOnDemand
+        if isOnDemand {
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.itemDuration
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.itemCurrentTime
+        }
 
         // Set the metadata
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo

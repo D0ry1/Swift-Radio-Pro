@@ -48,6 +48,24 @@ struct DataManager {
         return try Data(contentsOf: filePathURL, options: .uncached)
     }
 
+    static func getOnDemandEpisodes() async throws -> [OnDemandEpisode] {
+        guard let url = URL(string: Config.onDemandURL) else {
+            throw DataError.urlNotValid
+        }
+
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+
+        let session = URLSession(configuration: config)
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
+            throw DataError.httpResponseNotValid
+        }
+
+        return try JSONDecoder().decode([OnDemandEpisode].self, from: data)
+    }
+
     // Load http JSON Data
     private static func loadHttp() async throws -> Data {
         guard let url = URL(string: Config.stationsURL) else {

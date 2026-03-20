@@ -84,6 +84,12 @@
 		CEDABBEB291217AF00C0367F /* UIImageView+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDABBEA291217AF00C0367F /* UIImageView+Cache.swift */; };
 		CEDABBED29121BBA00C0367F /* UIImage+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDABBEC29121BBA00C0367F /* UIImage+Cache.swift */; };
 		CF72ACE721F7155200461EED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF72ACE621F714D000461EED /* Main.storyboard */; };
+		AA0000012A50000100000001 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
+		AA0000012A50000100000002 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
+		AA0000022A50000200000001 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
+		AA0000022A50000200000002 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
+		AA0000032A50000300000001 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
+		AA0000032A50000300000002 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +103,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AA0000012A50000100000000 /* OnDemandEpisode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDemandEpisode.swift; sourceTree = "<group>"; };
+		AA0000022A50000200000000 /* PreviousShowsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousShowsViewController.swift; sourceTree = "<group>"; };
+		AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FRadioPlayer+Seek.swift"; sourceTree = "<group>"; };
 		2C5545BA1C1124DE00728469 /* SwiftRadioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftRadioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C5545BC1C1124DE00728469 /* SwiftRadioUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftRadioUITests.swift; sourceTree = "<group>"; };
 		2C5545BE1C1124DE00728469 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -290,6 +299,7 @@
 			isa = PBXGroup;
 			children = (
 				94AC70AD1AD05C6200652982 /* RadioStation.swift */,
+				AA0000012A50000100000000 /* OnDemandEpisode.swift */,
 				CE963ECB29135A6F004F299E /* StationsManager.swift */,
 			);
 			path = Model;
@@ -305,6 +315,7 @@
 				94452E4E1AD6F24700BFE7A5 /* PopUpMenuViewController.swift */,
 				9409E13F1ABF78B000312E2B /* NowPlayingViewController.swift */,
 				CE6036122A47A87A00E15E15 /* StationsViewController.swift */,
+				AA0000022A50000200000000 /* PreviousShowsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -322,6 +333,7 @@
 				CED6353A293081ED002B216F /* Handoffable.swift */,
 				CE321FF229371140001572BD /* Bundle+appName.swift */,
 				CE6036182A48BA2500E15E15 /* UITableViewCell+reuseIdentifier.swift */,
+				AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -523,6 +535,9 @@
 				CE9EE8E1293C048A00F62041 /* LoaderController.swift in Sources */,
 				CEDABBEB291217AF00C0367F /* UIImageView+Cache.swift in Sources */,
 				CE6036132A47A87A00E15E15 /* StationsViewController.swift in Sources */,
+				AA0000012A50000100000001 /* OnDemandEpisode.swift in Sources */,
+				AA0000022A50000200000001 /* PreviousShowsViewController.swift in Sources */,
+				AA0000032A50000300000001 /* FRadioPlayer+Seek.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,6 +573,9 @@
 				CE9EE8E2293C048A00F62041 /* LoaderController.swift in Sources */,
 				CE6A3E41291F376D0058C82A /* UIImageView+Cache.swift in Sources */,
 				CE6036142A47A87A00E15E15 /* StationsViewController.swift in Sources */,
+				AA0000012A50000100000002 /* OnDemandEpisode.swift in Sources */,
+				AA0000022A50000200000002 /* PreviousShowsViewController.swift in Sources */,
+				AA0000032A50000300000002 /* FRadioPlayer+Seek.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,7 +681,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";

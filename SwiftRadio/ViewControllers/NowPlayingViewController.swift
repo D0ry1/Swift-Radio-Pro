@@ -47,6 +47,51 @@ class NowPlayingViewController: UIViewController {
 
     var mpVolumeSlider: UISlider?
 
+    // MARK: - Scrub Bar UI
+
+    private let scrubBar: UISlider = {
+        let slider = UISlider()
+        slider.minimumTrackTintColor = .white
+        slider.maximumTrackTintColor = .white.withAlphaComponent(0.3)
+        slider.setThumbImage(UIImage(named: "slider-ball"), for: .normal)
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.isHidden = true
+        return slider
+    }()
+
+    private let currentTimeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        label.textColor = .white.withAlphaComponent(0.7)
+        label.text = "0:00"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
+
+    private let durationLabel: UILabel = {
+        let label = UILabel()
+        label.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        label.textColor = .white.withAlphaComponent(0.7)
+        label.textAlignment = .right
+        label.text = "0:00"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
+
+    private var isScrubbing = false
+    private var timeObserver: Any?
+    private var volumeTopConstraint: NSLayoutConstraint?
+    private let volumeTopDefault: CGFloat = 12
+    private let volumeTopWithScrub: CGFloat = 56
+
+    deinit {
+        if let observer = timeObserver {
+            player.avPlayer?.removeTimeObserver(observer)
+        }
+    }
+
     // MARK: - ViewDidLoad
 
     override func viewDidLoad() {
@@ -89,6 +134,9 @@ class NowPlayingViewController: UIViewController {
         previousButton.isHidden = Config.hideNextPreviousButtons
         nextButton.isHidden = Config.hideNextPreviousButtons
 
+        // Setup scrub bar
+        setupScrubBar()
+
         isPlayingDidChange(player.isPlaying)
     }
 
@@ -122,6 +170,108 @@ class NowPlayingViewController: UIViewController {
         airPlayView.addSubview(airPlayButton)
     }
 
+    // MARK: - Scrub Bar
+
+    func setupScrubBar() {
+        view.addSubview(scrubBar)
+        view.addSubview(currentTimeLabel)
+        view.addSubview(durationLabel)
+
+        // Position scrub bar between the controls and the volume slider
+        let volumeStack = volumeParentView.superview!
+        let controlsStack = playingButton.superview!
+
+        // Find the storyboard constraint: volumeStack.top == controlsStack.bottom + 12
+        for constraint in view.constraints {
+            if constraint.firstItem === volumeStack && constraint.firstAttribute == .top &&
+               constraint.secondItem === controlsStack && constraint.secondAttribute == .bottom {
+                volumeTopConstraint = constraint
+                break
+            }
+        }
+
+        NSLayoutConstraint.activate([
+            scrubBar.leadingAnchor.constraint(equalTo: volumeStack.leadingAnchor),
+            scrubBar.trailingAnchor.constraint(equalTo: volumeStack.trailingAnchor),
+            scrubBar.topAnchor.constraint(equalTo: controlsStack.bottomAnchor, constant: 12),
+
+            currentTimeLabel.leadingAnchor.constraint(equalTo: scrubBar.leadingAnchor),
+            currentTimeLabel.topAnchor.constraint(equalTo: scrubBar.bottomAnchor, constant: 2),
+
+            durationLabel.trailingAnchor.constraint(equalTo: scrubBar.trailingAnchor),
+            durationLabel.topAnchor.constraint(equalTo: scrubBar.bottomAnchor, constant: 2)
+        ])
+
+        scrubBar.addTarget(self, action: #selector(scrubBarValueChanged(_:)), for: .valueChanged)
+        scrubBar.addTarget(self, action: #selector(scrubBarTouchDown(_:)), for: .touchDown)
+        scrubBar.addTarget(self, action: #selector(scrubBarTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
+
+        startTimeObserver()
+    }
+
+    private func startTimeObserver() {
+        guard let avPlayer = player.avPlayer else { return }
+        let interval = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        timeObserver = avPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] _ in
+            Task { @MainActor in
+                self?.updateScrubProgress()
+            }
+        }
+    }
+
+    private func stopTimeObserver() {
+        if let observer = timeObserver, let avPlayer = player.avPlayer {
+            avPlayer.removeTimeObserver(observer)
+        }
+        timeObserver = nil
+    }
+
+    private func updateScrubProgress() {
+        let duration = player.itemDuration
+        let current = player.itemCurrentTime
+        let seekable = duration > 0
+
+        let wasHidden = scrubBar.isHidden
+        scrubBar.isHidden = !seekable
+        currentTimeLabel.isHidden = !seekable
+        durationLabel.isHidden = !seekable
+
+        // Push volume slider down when scrub bar appears
+        if wasHidden != scrubBar.isHidden {
+            volumeTopConstraint?.constant = seekable ? volumeTopWithScrub : volumeTopDefault
+            view.layoutIfNeeded()
+        }
+
+        guard seekable, !isScrubbing else { return }
+
+        scrubBar.value = Float(current / duration)
+        currentTimeLabel.text = formatTime(current)
+        durationLabel.text = formatTime(duration)
+    }
+
+    @objc private func scrubBarValueChanged(_ slider: UISlider) {
+        let time = TimeInterval(slider.value) * player.itemDuration
+        currentTimeLabel.text = formatTime(time)
+    }
+
+    @objc private func scrubBarTouchDown(_ slider: UISlider) {
+        isScrubbing = true
+    }
+
+    @objc private func scrubBarTouchUp(_ slider: UISlider) {
+        let time = TimeInterval(slider.value) * player.itemDuration
+        player.seek(to: time)
+        isScrubbing = false
+    }
+
+    private func formatTime(_ time: TimeInterval) -> String {
+        guard time.isFinite, time >= 0 else { return "0:00" }
+        let totalSeconds = Int(time)
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+
     func stationDidChange() {
         albumImageView.image = nil
         Task {
@@ -134,6 +284,15 @@ class NowPlayingViewController: UIViewController {
         stationDescLabel.isHidden = player.currentArtworkURL != nil
         title = manager.currentStation?.name
         updateLabels()
+
+        // Reset scrub bar for new station/episode
+        scrubBar.value = 0
+        currentTimeLabel.text = "0:00"
+        durationLabel.text = "0:00"
+
+        // Restart time observer in case AVPlayer was recreated
+        stopTimeObserver()
+        startTimeObserver()
     }
 
     // MARK: - Player Controls (Play/Pause/Volume)
@@ -341,6 +500,7 @@ extension NowPlayingViewController: FRadioPlayerObserver {
             updateTrackArtwork()
         }
     }
+
 }
 
 extension NowPlayingViewController: StationsManagerObserver {

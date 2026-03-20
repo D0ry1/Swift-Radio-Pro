@@ -50,6 +50,12 @@ class MainCoordinator: NavigationCoordinator {
         aboutController.delegate = self
         viewController.present(aboutController, animated: true)
     }
+
+    func pushPreviousShows() {
+        let previousShowsVC = PreviousShowsViewController()
+        previousShowsVC.delegate = self
+        navigationController.pushViewController(previousShowsVC, animated: true)
+    }
 }
 
 // MARK: - LoaderControllerDelegate
@@ -77,6 +83,10 @@ extension MainCoordinator: StationsViewControllerDelegate {
         let popUpMenuController = Storyboard.viewController as PopUpMenuViewController
         popUpMenuController.delegate = self
         navigationController.present(popUpMenuController, animated: true)
+    }
+
+    func presentPreviousShows(_ stationsViewController: StationsViewController) {
+        pushPreviousShows()
     }
 }
 
@@ -112,6 +122,28 @@ extension MainCoordinator: PopUpMenuViewControllerDelegate {
     
     func didTapAboutButton(_ popUpMenuViewController: PopUpMenuViewController) {
         openAbout(in: popUpMenuViewController)
+    }
+
+    func didTapPreviousShowsButton(_ popUpMenuViewController: PopUpMenuViewController) {
+        popUpMenuViewController.dismiss(animated: true) { [weak self] in
+            self?.pushPreviousShows()
+        }
+    }
+}
+
+// MARK: - PreviousShowsViewControllerDelegate
+
+extension MainCoordinator: PreviousShowsViewControllerDelegate {
+
+    func previousShowsViewController(_ controller: PreviousShowsViewController, didSelectEpisode episode: OnDemandEpisode) {
+        let station = episode.toRadioStation()
+        let manager = StationsManager.shared
+        manager.set(station: station)
+
+        let nowPlayingController = Storyboard.viewController as NowPlayingViewController
+        nowPlayingController.delegate = self
+        nowPlayingController.isNewStation = true
+        navigationController.pushViewController(nowPlayingController, animated: true)
     }
 }
 

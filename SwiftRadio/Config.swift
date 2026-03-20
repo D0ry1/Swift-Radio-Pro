@@ -23,6 +23,10 @@ struct Config {
     // Set this to "false" to show the next/previous player buttons
     static let hideNextPreviousButtons = true
     
+    // On-demand episodes
+    static let onDemandURL = "https://thegatesradio.co.uk/api/station/the_gates_radio_station/ondemand"
+    static let onDemandBaseURL = "https://thegatesradio.co.uk"
+
     // Contact infos
     static let website = "https://github.com/analogcode/Swift-Radio-Pro"
     static let email = "contact@fethica.com"
