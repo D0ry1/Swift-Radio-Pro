@@ -36,11 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Start the coordinator
         coordinator = MainCoordinator(navigationController: UINavigationController())
-
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = coordinator?.navigationController
-        window?.makeKeyAndVisible()
-
         coordinator?.start()
 
         return true
