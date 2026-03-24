@@ -17,6 +17,7 @@ class NowPlayingView: UIView {
     
     private let animationView: NVActivityIndicatorView = {
         let activityIndicatorView = NVActivityIndicatorView(frame: .zero, type: .audioEqualizer, color: .white, padding: nil)
+        activityIndicatorView.isAccessibilityElement = false
         NSLayoutConstraint.activate([
             activityIndicatorView.widthAnchor.constraint(equalToConstant: 30),
             activityIndicatorView.heightAnchor.constraint(equalToConstant: 20)
@@ -29,6 +30,10 @@ class NowPlayingView: UIView {
         button.isEnabled = false
         button.contentHorizontalAlignment = .left
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isAccessibilityElement = true
+        button.accessibilityTraits = .button
+        button.accessibilityLabel = NowPlayingView.resetTitle
+        button.accessibilityHint = "Double tap to open now playing screen"
         return button
     }()
     
@@ -36,14 +41,18 @@ class NowPlayingView: UIView {
         let label = UILabel()
         label.text = NowPlayingView.resetTitle
         label.font = .preferredFont(forTextStyle: .callout)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .lightText
+        label.isAccessibilityElement = false
         return label
     }()
-    
+
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .caption2)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .lightText
+        label.isAccessibilityElement = false
         return label
     }()
     
@@ -67,6 +76,7 @@ class NowPlayingView: UIView {
         let dividerView = UIView()
         dividerView.backgroundColor = UIColor.darkGray.withAlphaComponent(0.8)
         dividerView.translatesAutoresizingMaskIntoConstraints = false
+        dividerView.isAccessibilityElement = false
         addSubview(dividerView)
         
         NSLayoutConstraint.activate([
@@ -120,18 +130,23 @@ class NowPlayingView: UIView {
         titleLabel.text = NowPlayingView.resetTitle
         subtitleLabel.text = nil
         nowPlayingButton.isEnabled = false
+        nowPlayingButton.accessibilityLabel = NowPlayingView.resetTitle
     }
-    
+
     func update(with title: String?, subtitle: String) {
         nowPlayingButton.isEnabled = true
-        
+
         if let title {
             titleLabel.text = title
             subtitleLabel.text = subtitle
+            nowPlayingButton.accessibilityLabel = "\(title), \(subtitle)"
         } else {
             titleLabel.text = subtitle
             subtitleLabel.text = "Now playing ..."
+            nowPlayingButton.accessibilityLabel = "\(subtitle), Now playing"
         }
+
+        UIAccessibility.post(notification: .announcement, argument: nowPlayingButton.accessibilityLabel)
     }
     
     @objc private func handleTap() {

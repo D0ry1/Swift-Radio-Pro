@@ -47,6 +47,17 @@
                ReferencedContainer = "container:SwiftRadio.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "65BC9D342F7340740014C62A"
+               BuildableName = "SwiftRadioTests.xctest"
+               BlueprintName = "SwiftRadioTests"
+               ReferencedContainer = "container:SwiftRadio.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

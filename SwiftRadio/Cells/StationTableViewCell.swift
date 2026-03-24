@@ -16,6 +16,7 @@ class StationTableViewCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 8
+        imageView.isAccessibilityElement = false
         NSLayoutConstraint.activate([
             imageView.heightAnchor.constraint(equalToConstant: 75),
             imageView.widthAnchor.constraint(equalToConstant: 75)
@@ -26,6 +27,7 @@ class StationTableViewCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title3)
+        label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -34,6 +36,7 @@ class StationTableViewCell: UITableViewCell {
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .footnote)
+        label.adjustsFontForContentSizeCategory = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -48,6 +51,8 @@ class StationTableViewCell: UITableViewCell {
         titleLabel.text  = nil
         subtitleLabel.text  = nil
         stationImageView.image = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
     }
 
     required init?(coder: NSCoder) {
@@ -55,6 +60,10 @@ class StationTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
+
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityHint = "Double tap to play"
 
         selectionStyle = .default
 
@@ -86,6 +95,9 @@ extension StationTableViewCell {
         // Configure the cell...
         titleLabel.text = station.name
         subtitleLabel.text = station.desc
+
+        accessibilityLabel = station.name
+        accessibilityValue = station.desc
 
         Task { @MainActor in
             let image = await station.getImage()

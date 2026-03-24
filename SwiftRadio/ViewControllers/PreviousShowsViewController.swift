@@ -42,6 +42,7 @@ class PreviousShowsViewController: BaseController {
         indicator.color = .white
         indicator.hidesWhenStopped = true
         indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.accessibilityLabel = "Loading previous shows"
         return indicator
     }()
 
@@ -85,6 +86,9 @@ class PreviousShowsViewController: BaseController {
             }
             activityIndicator.stopAnimating()
             tableView.reloadData()
+            if !episodes.isEmpty {
+                UIAccessibility.post(notification: .screenChanged, argument: tableView)
+            }
         }
     }
 
@@ -120,6 +124,7 @@ extension PreviousShowsViewController: UITableViewDataSource {
         let episode = episodes[indexPath.row]
         let station = episode.toRadioStation()
         cell.configureStationCell(station: station)
+        cell.accessibilityHint = "Double tap to play this episode"
         return cell
     }
 }

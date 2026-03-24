@@ -26,6 +26,7 @@ class InfoDetailViewController: UIViewController {
 
         setupStationText()
         setupStationLogo()
+        configureAccessibility()
     }
 
     // MARK: - UI Helpers
@@ -63,6 +64,19 @@ class InfoDetailViewController: UIViewController {
 
         // Apply shadow to Station Image
         stationImageView.applyShadow()
+    }
+
+    // MARK: - Accessibility
+
+    private func configureAccessibility() {
+        stationImageView.isAccessibilityElement = true
+        stationImageView.accessibilityLabel = "Logo for \(currentStation.name)"
+        stationImageView.accessibilityTraits = .image
+
+        stationNameLabel.accessibilityTraits = .header
+
+        okayButton.accessibilityLabel = "Close"
+        okayButton.accessibilityHint = "Returns to the now playing screen"
     }
 
     // MARK: - IBActions

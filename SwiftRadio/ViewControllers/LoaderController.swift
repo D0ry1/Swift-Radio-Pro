@@ -24,6 +24,7 @@ class LoaderController: BaseController {
         let view = UIActivityIndicatorView(style: .medium)
         view.color = .white
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.accessibilityLabel = "Loading stations"
         return view
     }()
 
@@ -31,6 +32,7 @@ class LoaderController: BaseController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         label.text = "Something went wrong!"
         return label
@@ -41,6 +43,7 @@ class LoaderController: BaseController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = UIFont.preferredFont(forTextStyle: .footnote)
+        label.adjustsFontForContentSizeCategory = true
         return label
     }()
 
@@ -61,6 +64,7 @@ class LoaderController: BaseController {
     private func handle(_ error: Error) {
         stackView.isHidden = false
         errorMessageLabel.text = error.localizedDescription
+        UIAccessibility.post(notification: .screenChanged, argument: errorTitleLabel)
     }
 
     private func fetchStations() {
@@ -86,6 +90,9 @@ class LoaderController: BaseController {
         let logoImage = UIImage(named: "logo")
         let logoImageView = UIImageView(image: logoImage)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.isAccessibilityElement = true
+        logoImageView.accessibilityLabel = "Swift Radio"
+        logoImageView.accessibilityTraits = .image
 
         view.addSubview(logoImageView)
 
@@ -106,6 +113,7 @@ class LoaderController: BaseController {
         let retryButton = UIButton(type: .system)
         retryButton.setTitle("Try again", for: .normal)
         retryButton.addTarget(self, action: #selector(handleRetry), for: .touchUpInside)
+        retryButton.accessibilityHint = "Double tap to retry loading stations"
 
         // Stack view
         stackView.addArrangedSubview(errorTitleLabel)

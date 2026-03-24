@@ -1,23 +1,74 @@
-//
-//  SwiftRadioUITests.swift
-//  SwiftRadioUITests
-//
-//  Created by Jonah Stiennon on 12/3/15.
-//  Copyright © 2015 matthewfecher.com. All rights reserved.
-//
-
 import XCTest
 
-class SwiftRadioUITests: XCTestCase {
-    
+final class SwiftRadioUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launch()
     }
-    
+
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        app = nil
         super.tearDown()
-    }    
+    }
+
+    // MARK: - Smoke Tests
+
+    func testAppLaunchesAndShowsStationsList() {
+        // The loader fetches stations then transitions to the stations screen.
+        // Wait for the nav bar title "Swift Radio" to appear (up to 10s for network).
+        let navBar = app.navigationBars["Swift Radio"]
+        XCTAssertTrue(navBar.waitForExistence(timeout: 10),
+                       "Stations screen should appear after loading")
+    }
+
+    func testPreviousShowsButtonExists() {
+        let navBar = app.navigationBars["Swift Radio"]
+        guard navBar.waitForExistence(timeout: 10) else {
+            XCTFail("Stations screen did not appear")
+            return
+        }
+
+        let previousShowsButton = app.buttons["Previous Shows"]
+        XCTAssertTrue(previousShowsButton.exists,
+                       "Previous Shows button should be visible in the stations list")
+    }
+
+    func testPreviousShowsButtonNavigates() {
+        let navBar = app.navigationBars["Swift Radio"]
+        guard navBar.waitForExistence(timeout: 10) else {
+            XCTFail("Stations screen did not appear")
+            return
+        }
+
+        app.buttons["Previous Shows"].tap()
+
+        let previousShowsNav = app.navigationBars["Previous Shows"]
+        XCTAssertTrue(previousShowsNav.waitForExistence(timeout: 10),
+                       "Should navigate to Previous Shows screen")
+    }
+
+    func testHamburgerMenuOpens() {
+        let navBar = app.navigationBars["Swift Radio"]
+        guard navBar.waitForExistence(timeout: 10) else {
+            XCTFail("Stations screen did not appear")
+            return
+        }
+
+        // The hamburger button is the left bar button item
+        let menuButton = navBar.buttons.element(boundBy: 0)
+        XCTAssertTrue(menuButton.exists, "Hamburger menu button should exist")
+        menuButton.tap()
+
+        // The pop-up menu should appear — look for common menu items
+        let aboutButton = app.buttons["About"]
+        let websiteButton = app.buttons["Website"]
+        let menuAppeared = aboutButton.waitForExistence(timeout: 5)
+                        || websiteButton.waitForExistence(timeout: 2)
+        XCTAssertTrue(menuAppeared, "Pop-up menu should appear after tapping hamburger")
+    }
 }

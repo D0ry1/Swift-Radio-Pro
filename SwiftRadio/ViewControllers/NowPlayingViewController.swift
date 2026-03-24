@@ -138,6 +138,35 @@ class NowPlayingViewController: UIViewController {
         setupScrubBar()
 
         isPlayingDidChange(player.isPlaying)
+
+        // Accessibility
+        configureAccessibility()
+    }
+
+    // MARK: - Accessibility
+
+    private func configureAccessibility() {
+        albumImageView.isAccessibilityElement = true
+        albumImageView.accessibilityLabel = "Album artwork"
+        albumImageView.accessibilityTraits = .image
+
+        playingButton.accessibilityLabel = player.isPlaying ? "Pause" : "Play"
+        playingButton.accessibilityHint = "Double tap to toggle playback"
+
+        previousButton.accessibilityLabel = "Previous station"
+        nextButton.accessibilityLabel = "Next station"
+
+        songLabel.accessibilityTraits = .updatesFrequently
+        songLabel.adjustsFontForContentSizeCategory = true
+        artistLabel.adjustsFontForContentSizeCategory = true
+        stationDescLabel.adjustsFontForContentSizeCategory = true
+
+        scrubBar.accessibilityLabel = "Playback position"
+
+        currentTimeLabel.isAccessibilityElement = false
+        durationLabel.isAccessibilityElement = false
+
+        nowPlayingImageView.isAccessibilityElement = false
     }
 
     // MARK: - Setup
@@ -160,6 +189,7 @@ class NowPlayingViewController: UIViewController {
         mpVolumeSlider.centerYAnchor.constraint(equalTo: volumeParentView.centerYAnchor).isActive = true
 
         mpVolumeSlider.setThumbImage(UIImage(named: "slider-ball"), for: .normal)
+        mpVolumeSlider.accessibilityLabel = "Volume"
     }
 
     func setupAirPlayButton() {
@@ -168,6 +198,11 @@ class NowPlayingViewController: UIViewController {
         airPlayButton.tintColor = .gray
         airPlayView.backgroundColor = .clear
         airPlayView.addSubview(airPlayButton)
+
+        airPlayView.isAccessibilityElement = true
+        airPlayView.accessibilityLabel = "AirPlay"
+        airPlayView.accessibilityHint = "Double tap to choose audio output"
+        airPlayView.accessibilityTraits = .button
     }
 
     // MARK: - Scrub Bar
@@ -247,11 +282,13 @@ class NowPlayingViewController: UIViewController {
         scrubBar.value = Float(current / duration)
         currentTimeLabel.text = formatTime(current)
         durationLabel.text = formatTime(duration)
+        scrubBar.accessibilityValue = "\(formatTime(current)) of \(formatTime(duration))"
     }
 
     @objc private func scrubBarValueChanged(_ slider: UISlider) {
         let time = TimeInterval(slider.value) * player.itemDuration
         currentTimeLabel.text = formatTime(time)
+        scrubBar.accessibilityValue = "\(formatTime(time)) of \(formatTime(player.itemDuration))"
     }
 
     @objc private func scrubBarTouchDown(_ slider: UISlider) {
@@ -274,6 +311,7 @@ class NowPlayingViewController: UIViewController {
 
     func stationDidChange() {
         albumImageView.image = nil
+        albumImageView.accessibilityLabel = "Album artwork for \(manager.currentStation?.name ?? "unknown station")"
         Task {
             if let station = manager.currentStation {
                 let image = await station.getImage()
@@ -340,6 +378,7 @@ class NowPlayingViewController: UIViewController {
 
     private func isPlayingDidChange(_ isPlaying: Bool) {
         playingButton.isSelected = isPlaying
+        playingButton.accessibilityLabel = isPlaying ? "Pause" : "Play"
         startNowPlayingAnimation(isPlaying)
     }
 
@@ -402,9 +441,15 @@ class NowPlayingViewController: UIViewController {
 
         guard let statusMessage = statusMessage else {
             // Radio is (hopefully) streaming properly
-            songLabel.text = manager.currentStation?.trackName
-            artistLabel.text = manager.currentStation?.artistName
+            let trackName = manager.currentStation?.trackName
+            let artistName = manager.currentStation?.artistName
+            songLabel.text = trackName
+            artistLabel.text = artistName
             shouldAnimateSongLabel(animate)
+
+            if let trackName {
+                UIAccessibility.post(notification: .announcement, argument: trackName)
+            }
             return
         }
 
@@ -415,6 +460,8 @@ class NowPlayingViewController: UIViewController {
 
         songLabel.text = statusMessage
         artistLabel.text = manager.currentStation?.name
+
+        UIAccessibility.post(notification: .announcement, argument: statusMessage)
 
         if animate {
             songLabel.animation = "flash"

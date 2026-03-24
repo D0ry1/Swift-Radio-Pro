@@ -44,6 +44,19 @@ class PopUpMenuViewController: UIViewController {
         backgroundView.isUserInteractionEnabled = true
         backgroundView.addGestureRecognizer(gestureRecognizer)
 
+        // Accessibility
+        view.accessibilityViewIsModal = true
+        backgroundView.isAccessibilityElement = true
+        backgroundView.accessibilityLabel = "Close menu"
+        backgroundView.accessibilityTraits = .button
+
+        // Label the close button in the popup
+        for subview in popupView.subviews {
+            if let button = subview as? UIButton, button.image(for: .normal) != nil, button.title(for: .normal) == nil {
+                button.accessibilityLabel = "Close"
+            }
+        }
+
         // Add "Previous Shows" button programmatically
         addPreviousShowsButton()
     }
@@ -52,11 +65,13 @@ class PopUpMenuViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Previous Shows", for: .normal)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.backgroundColor = UIColor(red: 0.17, green: 0.42, blue: 0.60, alpha: 1.0)
         button.tintColor = .white
         button.layer.cornerRadius = 4
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(previousShowsButtonPressed), for: .touchUpInside)
+        button.accessibilityHint = "Shows previously aired episodes"
 
         popupView.addSubview(button)
 

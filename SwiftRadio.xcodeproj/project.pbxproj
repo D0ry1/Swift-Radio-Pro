@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -25,6 +25,12 @@
 		94D260911B45D20000DE671C /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D260901B45D20000DE671C /* Config.swift */; };
 		94D260961B45E3FA00DE671C /* AnimationFrames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D260951B45E3FA00DE671C /* AnimationFrames.swift */; };
 		94E9761C1B1A8F3200F52B1E /* UIImage+DropShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E9761B1B1A8F3200F52B1E /* UIImage+DropShadow.swift */; };
+		AA0000012A50000100000001 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
+		AA0000012A50000100000002 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
+		AA0000022A50000200000001 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
+		AA0000022A50000200000002 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
+		AA0000032A50000300000001 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
+		AA0000032A50000300000002 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
 		CE0A4998291F3AD40071C0CC /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A4999291F3AD40071C0CC /* CarPlaySceneDelegate.swift */; };
 		CE321FF329371140001572BD /* Bundle+appName.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE321FF229371140001572BD /* Bundle+appName.swift */; };
 		CE321FF429371140001572BD /* Bundle+appName.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE321FF229371140001572BD /* Bundle+appName.swift */; };
@@ -84,12 +90,6 @@
 		CEDABBEB291217AF00C0367F /* UIImageView+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDABBEA291217AF00C0367F /* UIImageView+Cache.swift */; };
 		CEDABBED29121BBA00C0367F /* UIImage+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDABBEC29121BBA00C0367F /* UIImage+Cache.swift */; };
 		CF72ACE721F7155200461EED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF72ACE621F714D000461EED /* Main.storyboard */; };
-		AA0000012A50000100000001 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
-		AA0000012A50000100000002 /* OnDemandEpisode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012A50000100000000 /* OnDemandEpisode.swift */; };
-		AA0000022A50000200000001 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
-		AA0000022A50000200000002 /* PreviousShowsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022A50000200000000 /* PreviousShowsViewController.swift */; };
-		AA0000032A50000300000001 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
-		AA0000032A50000300000002 /* FRadioPlayer+Seek.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,12 +100,16 @@
 			remoteGlobalIDString = 9409E1151ABF6FEA00312E2B;
 			remoteInfo = SwiftRadio;
 		};
+		65BC9D392F7340740014C62A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9409E10E1ABF6FE900312E2B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9409E1151ABF6FEA00312E2B;
+			remoteInfo = SwiftRadio;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		AA0000012A50000100000000 /* OnDemandEpisode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDemandEpisode.swift; sourceTree = "<group>"; };
-		AA0000022A50000200000000 /* PreviousShowsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousShowsViewController.swift; sourceTree = "<group>"; };
-		AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FRadioPlayer+Seek.swift"; sourceTree = "<group>"; };
 		2C5545BA1C1124DE00728469 /* SwiftRadioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftRadioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C5545BC1C1124DE00728469 /* SwiftRadioUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftRadioUITests.swift; sourceTree = "<group>"; };
 		2C5545BE1C1124DE00728469 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -113,6 +117,7 @@
 		5FDEE0211F72FF980064333C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6258DCD722D93A3500166C65 /* LogoShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoShareView.swift; sourceTree = "<group>"; };
 		6258DCD922D93A5400166C65 /* LogoShareView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LogoShareView.xib; sourceTree = "<group>"; };
+		65BC9D352F7340740014C62A /* SwiftRadioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftRadioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9409E1161ABF6FEA00312E2B /* SwiftRadio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftRadio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9409E11A1ABF6FEA00312E2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9409E11B1ABF6FEA00312E2B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -128,6 +133,9 @@
 		94D260901B45D20000DE671C /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		94D260951B45E3FA00DE671C /* AnimationFrames.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationFrames.swift; sourceTree = "<group>"; };
 		94E9761B1B1A8F3200F52B1E /* UIImage+DropShadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+DropShadow.swift"; sourceTree = "<group>"; };
+		AA0000012A50000100000000 /* OnDemandEpisode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDemandEpisode.swift; sourceTree = "<group>"; };
+		AA0000022A50000200000000 /* PreviousShowsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousShowsViewController.swift; sourceTree = "<group>"; };
+		AA0000032A50000300000000 /* FRadioPlayer+Seek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FRadioPlayer+Seek.swift"; sourceTree = "<group>"; };
 		CE0A4994291F3A220071C0CC /* SwiftRadio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftRadio.entitlements; sourceTree = "<group>"; };
 		CE0A4999291F3AD40071C0CC /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		CE321FF229371140001572BD /* Bundle+appName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+appName.swift"; sourceTree = "<group>"; };
@@ -150,8 +158,19 @@
 		CF72ACE621F714D000461EED /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		65BC9D362F7340740014C62A /* SwiftRadioTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SwiftRadioTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		2C5545B71C1124DE00728469 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65BC9D322F7340740014C62A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -197,6 +216,7 @@
 			children = (
 				9409E1181ABF6FEA00312E2B /* SwiftRadio */,
 				2C5545BB1C1124DE00728469 /* SwiftRadioUITests */,
+				65BC9D362F7340740014C62A /* SwiftRadioTests */,
 				9409E1171ABF6FEA00312E2B /* Products */,
 				CE6036262A48F70A00E15E15 /* Frameworks */,
 			);
@@ -208,6 +228,7 @@
 				9409E1161ABF6FEA00312E2B /* SwiftRadio.app */,
 				2C5545BA1C1124DE00728469 /* SwiftRadioUITests.xctest */,
 				CE6A3E4F291F376D0058C82A /* SwiftRadio-CarPlay.app */,
+				65BC9D352F7340740014C62A /* SwiftRadioTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -359,6 +380,29 @@
 			productReference = 2C5545BA1C1124DE00728469 /* SwiftRadioUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		65BC9D342F7340740014C62A /* SwiftRadioTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65BC9D3D2F7340740014C62A /* Build configuration list for PBXNativeTarget "SwiftRadioTests" */;
+			buildPhases = (
+				65BC9D312F7340740014C62A /* Sources */,
+				65BC9D322F7340740014C62A /* Frameworks */,
+				65BC9D332F7340740014C62A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				65BC9D3A2F7340740014C62A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				65BC9D362F7340740014C62A /* SwiftRadioTests */,
+			);
+			name = SwiftRadioTests;
+			packageProductDependencies = (
+			);
+			productName = SwiftRadioTests;
+			productReference = 65BC9D352F7340740014C62A /* SwiftRadioTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		9409E1151ABF6FEA00312E2B /* SwiftRadio */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9409E1381ABF6FEA00312E2B /* Build configuration list for PBXNativeTarget "SwiftRadio" */;
@@ -413,13 +457,17 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftMigration = 0700;
-				LastSwiftUpdateCheck = 0710;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = matthewfecher.com;
 				TargetAttributes = {
 					2C5545B91C1124DE00728469 = {
 						CreatedOnToolsVersion = 7.1;
 						LastSwiftMigration = 1020;
+						TestTargetID = 9409E1151ABF6FEA00312E2B;
+					};
+					65BC9D342F7340740014C62A = {
+						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 9409E1151ABF6FEA00312E2B;
 					};
 					9409E1151ABF6FEA00312E2B = {
@@ -454,12 +502,20 @@
 				9409E1151ABF6FEA00312E2B /* SwiftRadio */,
 				CE6A3E2B291F376D0058C82A /* SwiftRadio-CarPlay */,
 				2C5545B91C1124DE00728469 /* SwiftRadioUITests */,
+				65BC9D342F7340740014C62A /* SwiftRadioTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2C5545B81C1124DE00728469 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65BC9D332F7340740014C62A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -501,6 +557,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C5545BD1C1124DE00728469 /* SwiftRadioUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65BC9D312F7340740014C62A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,6 +650,11 @@
 			target = 9409E1151ABF6FEA00312E2B /* SwiftRadio */;
 			targetProxy = 2C5545BF1C1124DE00728469 /* PBXContainerItemProxy */;
 		};
+		65BC9D3A2F7340740014C62A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9409E1151ABF6FEA00312E2B /* SwiftRadio */;
+			targetProxy = 65BC9D392F7340740014C62A /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -627,6 +695,74 @@
 				SWIFT_VERSION = 5.10;
 				TEST_TARGET_NAME = SwiftRadio;
 				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+		65BC9D3B2F7340740014C62A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J7VWYJQJ35;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.SwiftRadioTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftRadio.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftRadio";
+			};
+			name = Debug;
+		};
+		65BC9D3C2F7340740014C62A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J7VWYJQJ35;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.SwiftRadioTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftRadio.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftRadio";
 			};
 			name = Release;
 		};
@@ -763,7 +899,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.8;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
 				PRODUCT_NAME = SwiftRadio;
@@ -797,7 +933,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.8;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
 				PRODUCT_NAME = SwiftRadio;
@@ -826,6 +962,7 @@
 				);
 				INFOPLIST_FILE = "SwiftRadio/Info-CarPlay.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "The Gates Radio Station";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -861,6 +998,7 @@
 				);
 				INFOPLIST_FILE = "SwiftRadio/Info-CarPlay.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "The Gates Radio Station";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -887,6 +1025,15 @@
 			buildConfigurations = (
 				2C5545C11C1124DE00728469 /* Debug */,
 				2C5545C21C1124DE00728469 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65BC9D3D2F7340740014C62A /* Build configuration list for PBXNativeTarget "SwiftRadioTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65BC9D3B2F7340740014C62A /* Debug */,
+				65BC9D3C2F7340740014C62A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

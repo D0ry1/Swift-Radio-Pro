@@ -69,7 +69,10 @@ class StationsViewController: BaseController, Handoffable {
         navigationController?.navigationBar.prefersLargeTitles = true
 
         // NavigationBar items
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon-hamburger"), style: .plain, target: self, action: #selector(handleMenuTap))
+        let menuButton = UIBarButtonItem(image: UIImage(named: "icon-hamburger"), style: .plain, target: self, action: #selector(handleMenuTap))
+        menuButton.accessibilityLabel = "Menu"
+        menuButton.accessibilityHint = "Opens the menu"
+        navigationItem.leftBarButtonItem = menuButton
 
         // Previous Shows button in table header
         setupPreviousShowsHeader()
@@ -137,7 +140,10 @@ class StationsViewController: BaseController, Handoffable {
 
     private func createNowPlayingBarButton() {
         guard navigationItem.rightBarButtonItem == nil else { return }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn-nowPlaying"), style: .plain, target: self, action: #selector(nowPlayingBarButtonPressed))
+        let barButton = UIBarButtonItem(image: UIImage(named: "btn-nowPlaying"), style: .plain, target: self, action: #selector(nowPlayingBarButtonPressed))
+        barButton.accessibilityLabel = "Now Playing"
+        barButton.accessibilityHint = "Opens the now playing screen"
+        navigationItem.rightBarButtonItem = barButton
     }
 
     @objc func nowPlayingBarButtonPressed() {
@@ -159,11 +165,13 @@ class StationsViewController: BaseController, Handoffable {
         let button = UIButton(type: .system)
         button.setTitle("Previous Shows", for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.tintColor = .white
         button.backgroundColor = UIColor.white.withAlphaComponent(0.15)
         button.layer.cornerRadius = 8
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handlePreviousShowsTap), for: .touchUpInside)
+        button.accessibilityHint = "Shows previously aired episodes"
 
         headerView.addSubview(button)
 
@@ -245,6 +253,8 @@ extension StationsViewController: UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NothingFound", for: indexPath)
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
+            cell.isAccessibilityElement = true
+            cell.accessibilityLabel = "Loading stations"
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(for: indexPath) as StationTableViewCell
@@ -313,6 +323,9 @@ extension StationsViewController: StationsManagerObserver {
 
     func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation]) {
         tableView.reloadData()
+        if !stations.isEmpty {
+            UIAccessibility.post(notification: .screenChanged, argument: tableView)
+        }
     }
 
     func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?) {
