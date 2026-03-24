@@ -883,7 +883,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5DU7D4798M;
 				ENABLE_MODULE_VERIFIER = YES;
@@ -899,7 +899,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
 				PRODUCT_NAME = SwiftRadio;
@@ -917,7 +917,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5DU7D4798M;
 				ENABLE_MODULE_VERIFIER = YES;
@@ -933,7 +933,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
 				PRODUCT_NAME = SwiftRadio;
@@ -952,7 +952,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftRadio/SwiftRadio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5DU7D4798M;
 				ENABLE_MODULE_VERIFIER = YES;
@@ -968,7 +968,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				OTHER_SWIFT_FLAGS = "-D CarPlay";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
@@ -988,7 +988,7 @@
 				CODE_SIGN_ENTITLEMENTS = SwiftRadio/SwiftRadio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5DU7D4798M;
 				ENABLE_MODULE_VERIFIER = YES;
@@ -1004,7 +1004,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.8;
+				MARKETING_VERSION = 2.0.9;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				OTHER_SWIFT_FLAGS = "-D CarPlay";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TheGatesPrimarySchool.TheGatesRadioStation;
