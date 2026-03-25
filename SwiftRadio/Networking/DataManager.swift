@@ -8,8 +8,18 @@
 
 import UIKit
 
-enum DataError: Error {
+enum DataError: LocalizedError {
     case urlNotValid, dataNotValid, dataNotFound, fileNotFound, httpResponseNotValid
+
+    var errorDescription: String? {
+        switch self {
+        case .urlNotValid:          return "The station URL is not valid."
+        case .dataNotValid:         return "The station data could not be read."
+        case .dataNotFound:         return "No station data was found."
+        case .fileNotFound:         return "The stations file is missing."
+        case .httpResponseNotValid: return "The server returned an unexpected response."
+        }
+    }
 }
 
 struct DataManager {

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 import FRadioPlayer
 
 @MainActor
@@ -23,8 +24,9 @@ class StationsViewController: BaseController, Handoffable {
     weak var delegate: StationsViewControllerDelegate?
 
     // MARK: - Properties
-    private let player = FRadioPlayer.shared
     private let manager = StationsManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    private var observationTask: Task<Void, Never>?
 
     // MARK: - UI
 
@@ -76,9 +78,8 @@ class StationsViewController: BaseController, Handoffable {
         // Previous Shows button in table header
         setupPreviousShowsHeader()
 
-        // Setup Player
-        player.addObserver(self)
-        manager.addObserver(self)
+        // Subscribe to publishers
+        bindPublishers()
 
         // Setup Handoff User Activity
         setupHandoffUserActivity()
@@ -97,15 +98,105 @@ class StationsViewController: BaseController, Handoffable {
         title = "Swift Radio"
     }
 
-    @objc func refresh(sender: AnyObject) {
-        // Pull to Refresh
-        Task {
-            _ = try? await manager.fetch()
+    private func bindPublishers() {
+        let pub = RadioPlayerPublisher.shared
+        let player = FRadioPlayer.shared
 
-            // Wait 2 seconds then refresh screen
+        pub.playbackState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                startNowPlayingAnimation(player.isPlaying)
+            }
+            .store(in: &cancellables)
+
+        pub.metadata
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                updateNowPlayingButton(station: manager.currentStation)
+                updateHandoffUserActivity(userActivity, station: manager.currentStation)
+            }
+            .store(in: &cancellables)
+
+        observeManager()
+    }
+
+    private func observeManager() {
+        observationTask?.cancel()
+        let manager = self.manager
+        observationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                let oldStations = manager.stations
+                let oldStation = manager.currentStation
+                await withCheckedContinuation { continuation in
+                    withObservationTracking {
+                        _ = manager.stations
+                        _ = manager.currentStation
+                    } onChange: {
+                        continuation.resume()
+                    }
+                }
+                guard !Task.isCancelled, let self else { return }
+                if manager.stations != oldStations {
+                    self.tableView.reloadData()
+                    if !manager.stations.isEmpty {
+                        UIAccessibility.post(notification: .screenChanged, argument: self.tableView)
+                    }
+                }
+                if manager.currentStation != oldStation {
+                    guard let current = manager.currentStation else {
+                        self.resetCurrentStation()
+                        continue
+                    }
+                    self.updateNowPlayingButton(station: current)
+                }
+            }
+        }
+    }
+
+    @objc func refresh(sender: AnyObject) {
+        Task {
+            do {
+                _ = try await manager.fetch()
+            } catch {
+                showErrorBanner(error.localizedDescription)
+            }
+
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             refreshControl.endRefreshing()
             view.setNeedsDisplay()
+        }
+    }
+
+    private func showErrorBanner(_ message: String) {
+        let banner = UILabel()
+        banner.text = message
+        banner.textColor = .white
+        banner.backgroundColor = UIColor.systemRed.withAlphaComponent(0.85)
+        banner.textAlignment = .center
+        banner.font = .preferredFont(forTextStyle: .footnote)
+        banner.numberOfLines = 0
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        banner.layer.cornerRadius = 8
+        banner.clipsToBounds = true
+
+        // Padding via content insets
+        banner.layoutMargins = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+
+        view.addSubview(banner)
+        NSLayoutConstraint.activate([
+            banner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            banner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            banner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+
+        UIAccessibility.post(notification: .announcement, argument: message)
+
+        UIView.animate(withDuration: 0.3, delay: 3, options: []) {
+            banner.alpha = 0
+        } completion: { _ in
+            banner.removeFromSuperview()
         }
     }
 
@@ -125,7 +216,7 @@ class StationsViewController: BaseController, Handoffable {
 
         var playingTitle: String?
 
-        if player.currentMetadata != nil {
+        if FRadioPlayer.shared.currentMetadata != nil {
             playingTitle = station.trackName + " - " + station.artistName
         }
 
@@ -293,42 +384,5 @@ extension StationsViewController: UISearchResultsUpdating {
         guard let filter = searchController.searchBar.text else { return }
         manager.updateSearch(with: filter)
         tableView.reloadData()
-    }
-}
-
-// MARK: - FRadioPlayerObserver
-
-extension StationsViewController: FRadioPlayerObserver {
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, playbackStateDidChange state: FRadioPlayer.PlaybackState) {
-        Task { @MainActor in
-            startNowPlayingAnimation(player.isPlaying)
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, metadataDidChange metadata: FRadioPlayer.Metadata?) {
-        Task { @MainActor in
-            updateNowPlayingButton(station: manager.currentStation)
-            updateHandoffUserActivity(userActivity, station: manager.currentStation)
-        }
-    }
-}
-
-extension StationsViewController: StationsManagerObserver {
-
-    func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation]) {
-        tableView.reloadData()
-        if !stations.isEmpty {
-            UIAccessibility.post(notification: .screenChanged, argument: tableView)
-        }
-    }
-
-    func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?) {
-        guard let station = station else {
-            resetCurrentStation()
-            return
-        }
-
-        updateNowPlayingButton(station: station)
     }
 }

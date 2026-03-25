@@ -8,6 +8,7 @@
 
 import CarPlay
 import UIKit
+import Combine
 import MediaPlayer
 import FRadioPlayer
 
@@ -16,6 +17,8 @@ import FRadioPlayer
     var interfaceController: CPInterfaceController?
     private var stationListTemplate: CPListTemplate?
     private let player = FRadioPlayer.shared
+    private var cancellables = Set<AnyCancellable>()
+    private var observationTask: Task<Void, Never>?
 
     // MARK: - CPTemplateApplicationSceneDelegate
 
@@ -23,9 +26,8 @@ import FRadioPlayer
                                   didConnect interfaceController: CPInterfaceController) {
         self.interfaceController = interfaceController
         configureNowPlayingTemplate()
-        player.addObserver(self)
+        bindPublishers()
         Task { @MainActor in
-            StationsManager.shared.addObserver(self)
             await configureRootTemplate()
         }
     }
@@ -39,9 +41,40 @@ import FRadioPlayer
     func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
                                   didDisconnectInterfaceController interfaceController: CPInterfaceController) {
         self.interfaceController = nil
-        player.removeObserver(self)
-        Task { @MainActor in
-            StationsManager.shared.removeObserver(self)
+        cancellables.removeAll()
+        observationTask?.cancel()
+    }
+
+    // MARK: - Publishers
+
+    private func bindPublishers() {
+        let pub = RadioPlayerPublisher.shared
+
+        pub.playbackState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updatePlaybackRate() }
+            .store(in: &cancellables)
+
+        observeManager()
+    }
+
+    private func observeManager() {
+        observationTask?.cancel()
+        let manager = StationsManager.shared
+        observationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard self != nil else { return }
+                await withCheckedContinuation { continuation in
+                    withObservationTracking {
+                        _ = manager.stations
+                        _ = manager.currentStation
+                    } onChange: {
+                        continuation.resume()
+                    }
+                }
+                guard !Task.isCancelled, let self else { return }
+                updateStationList()
+            }
         }
     }
 
@@ -117,7 +150,7 @@ import FRadioPlayer
         nowPlayingInfo[MPMediaItemPropertyTitle] = station.trackName
         nowPlayingInfo[MPMediaItemPropertyArtist] = station.artistName
         nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
-        // Set to 1.0 since auto-play is enabled - will be updated by FRadioPlayerObserver
+        // Set to 1.0 since auto-play is enabled - will be updated by playback publisher
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
 
         // Load and set artwork
@@ -169,29 +202,5 @@ import FRadioPlayer
 
         let section = CPListSection(items: items)
         listTemplate.updateSections([section])
-    }
-}
-
-// MARK: - StationsManagerObserver
-
-extension CarPlaySceneDelegate: StationsManagerObserver {
-
-    func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation]) {
-        updateStationList()
-    }
-
-    func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?) {
-        updateStationList()
-    }
-}
-
-// MARK: - FRadioPlayerObserver
-
-extension CarPlaySceneDelegate: FRadioPlayerObserver {
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, playbackStateDidChange state: FRadioPlayer.PlaybackState) {
-        Task { @MainActor in
-            updatePlaybackRate()
-        }
     }
 }

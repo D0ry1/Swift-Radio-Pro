@@ -7,49 +7,55 @@
 //
 
 import UIKit
+import ActivityKit
+import Combine
 import FRadioPlayer
 import MediaPlayer
 
-@MainActor
-protocol StationsManagerObserver: AnyObject {
-    func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation])
-    func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?)
-}
-
-extension StationsManagerObserver {
-    func stationsManager(_ manager: StationsManager, stationsDidUpdate stations: [RadioStation]) {}
-}
-
+@Observable
 @MainActor
 final class StationsManager {
 
     static let shared = StationsManager()
 
-    private(set) var stations: [RadioStation] = [] {
-        didSet {
-            notifyObservers { observer in
-                observer.stationsManager(self, stationsDidUpdate: stations)
-            }
-        }
-    }
+    private(set) var stations: [RadioStation] = []
 
     private(set) var currentStation: RadioStation? {
         didSet {
-            notifyObservers { observer in
-                observer.stationsManager(self, stationDidChange: currentStation)
-            }
-
             resetArtwork(with: currentStation)
+            if currentStation != nil {
+                startLiveActivity()
+            } else {
+                endLiveActivity()
+            }
         }
     }
 
     var searchedStations: [RadioStation] = []
 
-    private var observations = [ObjectIdentifier : Observation]()
     private let player = FRadioPlayer.shared
+    private var cancellables = Set<AnyCancellable>()
 
     private init() {
-        self.player.addObserver(self)
+        let pub = RadioPlayerPublisher.shared
+
+        pub.metadata
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.resetArtwork(with: self?.currentStation)
+                self?.updateLiveActivity()
+            }
+            .store(in: &cancellables)
+
+        pub.artworkURL
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] url in self?.handleArtworkChange(url) }
+            .store(in: &cancellables)
+
+        pub.playbackState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updatePlaybackState() }
+            .store(in: &cancellables)
     }
 
     func fetch() async throws -> [RadioStation] {
@@ -108,36 +114,6 @@ final class StationsManager {
     }
 }
 
-// MARK: - StationsManager Observation
-
-extension StationsManager {
-
-    private struct Observation {
-        weak var observer: StationsManagerObserver?
-    }
-
-    func addObserver(_ observer: StationsManagerObserver) {
-        let id = ObjectIdentifier(observer)
-        observations[id] = Observation(observer: observer)
-    }
-
-    func removeObserver(_ observer: StationsManagerObserver) {
-        let id = ObjectIdentifier(observer)
-        observations.removeValue(forKey: id)
-    }
-
-    private func notifyObservers(with action: (_ observer: StationsManagerObserver) -> Void) {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else {
-                observations.removeValue(forKey: id)
-                continue
-            }
-
-            action(observer)
-        }
-    }
-}
-
 // MARK: - MPNowPlayingInfoCenter (Lock screen)
 
 extension StationsManager {
@@ -151,6 +127,23 @@ extension StationsManager {
 
         Task {
             let image = await station.getImage()
+            updateLockScreen(with: image)
+        }
+    }
+
+    private func handleArtworkChange(_ artworkURL: URL?) {
+        guard let artworkURL = artworkURL else {
+            resetArtwork(with: currentStation)
+            return
+        }
+
+        Task {
+            let image = await UIImage.image(from: artworkURL)
+            guard let image = image else {
+                resetArtwork(with: currentStation)
+                return
+            }
+
             updateLockScreen(with: image)
         }
     }
@@ -189,40 +182,6 @@ extension StationsManager {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .stopped
     }
-}
-
-// MARK: - FRadioPlayerObserver
-
-extension StationsManager: FRadioPlayerObserver {
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, metadataDidChange metadata: FRadioPlayer.Metadata?) {
-        Task { @MainActor in
-            resetArtwork(with: currentStation)
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, artworkDidChange artworkURL: URL?) {
-        Task { @MainActor in
-            guard let artworkURL = artworkURL else {
-                resetArtwork(with: currentStation)
-                return
-            }
-
-            let image = await UIImage.image(from: artworkURL)
-            guard let image = image else {
-                resetArtwork(with: currentStation)
-                return
-            }
-
-            updateLockScreen(with: image)
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, playbackStateDidChange state: FRadioPlayer.PlaybackState) {
-        Task { @MainActor in
-            updatePlaybackState()
-        }
-    }
 
     private func updatePlaybackState() {
         guard var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo else { return }
@@ -230,5 +189,62 @@ extension StationsManager: FRadioPlayerObserver {
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .stopped
+
+        updateLiveActivity()
+    }
+}
+
+// MARK: - Live Activity
+
+extension StationsManager {
+
+    private var liveActivityState: NowPlayingAttributes.ContentState? {
+        guard let station = currentStation else { return nil }
+        return NowPlayingAttributes.ContentState(
+            trackName: station.trackName,
+            artistName: station.artistName,
+            stationName: station.name,
+            isPlaying: player.isPlaying
+        )
+    }
+
+    func startLiveActivity() {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled,
+              let state = liveActivityState else { return }
+
+        // End any existing activity first
+        endLiveActivity()
+
+        let attributes = NowPlayingAttributes()
+        let content = ActivityContent(state: state, staleDate: nil)
+
+        do {
+            _ = try Activity.request(attributes: attributes, content: content, pushType: nil)
+        } catch {
+            if Config.debugLog { print("Live Activity start failed: \(error)") }
+        }
+    }
+
+    func updateLiveActivity() {
+        guard let state = liveActivityState else {
+            endLiveActivity()
+            return
+        }
+
+        let content = ActivityContent(state: state, staleDate: nil)
+
+        Task {
+            for activity in Activity<NowPlayingAttributes>.activities {
+                await activity.update(content)
+            }
+        }
+    }
+
+    func endLiveActivity() {
+        Task {
+            for activity in Activity<NowPlayingAttributes>.activities {
+                await activity.end(nil, dismissalPolicy: .immediate)
+            }
+        }
     }
 }

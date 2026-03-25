@@ -1,5 +1,5 @@
 {
-  "originHash" : "c03022914e54a7652fd2a88118474c6bd04be8d7b4eb153d776df85ac35986a7",
+  "originHash" : "470dd3d7e695ff7605c4b21b10d5a0300d93d7bdcebf8bccd1bedb9ccbbfbdb5",
   "pins" : [
     {
       "identity" : "fradioplayer",
@@ -8,24 +8,6 @@
       "state" : {
         "branch" : "v0.2.0",
         "revision" : "c3f472ed8cb59b442312362bca363863962c88b3"
-      }
-    },
-    {
-      "identity" : "nvactivityindicatorview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ninjaprox/NVActivityIndicatorView.git",
-      "state" : {
-        "revision" : "121455c4e630fcb95aaefd7e4257b0c2e3cfe6d5",
-        "version" : "5.2.0"
-      }
-    },
-    {
-      "identity" : "spring",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/fethica/Spring.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "63d6b2b4339606181617caddea3a988aa65bcadd"
       }
     }
   ],

@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import Combine
 import MediaPlayer
 import AVKit
-import Spring
 import FRadioPlayer
 
 @MainActor
@@ -26,8 +26,8 @@ class NowPlayingViewController: BaseController {
 
     // MARK: - UI
 
-    private let albumImageView: SpringImageView = {
-        let iv = SpringImageView()
+    private let albumImageView: UIImageView = {
+        let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -86,8 +86,8 @@ class NowPlayingViewController: BaseController {
         return button
     }()
 
-    private let songLabel: SpringLabel = {
-        let label = SpringLabel()
+    private let songLabel: UILabel = {
+        let label = UILabel()
         label.font = .preferredFont(forTextStyle: .title1)
         label.textColor = .white
         label.textAlignment = .center
@@ -161,6 +161,8 @@ class NowPlayingViewController: BaseController {
 
     private let player = FRadioPlayer.shared
     private let manager = StationsManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    private var observationTask: Task<Void, Never>?
 
     var isNewStation = true
     var nowPlayingImageView: UIImageView!
@@ -334,8 +336,7 @@ class NowPlayingViewController: BaseController {
 
         navigationItem.largeTitleDisplayMode = .never
 
-        player.addObserver(self)
-        manager.addObserver(self)
+        bindPublishers()
 
         // Create Now Playing BarItem
         createNowPlayingAnimation()
@@ -401,6 +402,52 @@ class NowPlayingViewController: BaseController {
         durationLabel.isAccessibilityElement = false
 
         nowPlayingImageView.isAccessibilityElement = false
+    }
+
+    // MARK: - Publishers
+
+    private func bindPublishers() {
+        let pub = RadioPlayerPublisher.shared
+
+        pub.playerState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in self?.playerStateDidChange(state, animate: true) }
+            .store(in: &cancellables)
+
+        pub.playbackState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in self?.playbackStateDidChange(state, animate: true) }
+            .store(in: &cancellables)
+
+        pub.metadata
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateLabels() }
+            .store(in: &cancellables)
+
+        pub.artworkURL
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateTrackArtwork() }
+            .store(in: &cancellables)
+
+        observeManager()
+    }
+
+    private func observeManager() {
+        observationTask?.cancel()
+        let manager = self.manager
+        observationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                await withCheckedContinuation { continuation in
+                    withObservationTracking {
+                        _ = manager.currentStation
+                    } onChange: {
+                        continuation.resume()
+                    }
+                }
+                guard !Task.isCancelled, let self else { return }
+                self.stationDidChange()
+            }
+        }
     }
 
     // MARK: - Setup
@@ -587,9 +634,7 @@ class NowPlayingViewController: BaseController {
 
         Task {
             await albumImageView.load(url: artworkURL)
-            albumImageView.animation = "wobble"
-            albumImageView.duration = 2
-            albumImageView.animate()
+            animateWobble(albumImageView, duration: 2)
             stationDescLabel.isHidden = true
 
             // Force app to update display
@@ -685,9 +730,7 @@ class NowPlayingViewController: BaseController {
         UIAccessibility.post(notification: .announcement, argument: statusMessage)
 
         if animate {
-            songLabel.animation = "flash"
-            songLabel.repeatCount = 2
-            songLabel.animate()
+            animateFlash(songLabel, repeatCount: 2)
         }
     }
 
@@ -697,11 +740,39 @@ class NowPlayingViewController: BaseController {
         // Animate if the Track has album metadata
         guard animate, player.currentMetadata != nil else { return }
 
-        // songLabel animation
-        songLabel.animation = "zoomIn"
-        songLabel.duration = 1.5
-        songLabel.damping = 1
-        songLabel.animate()
+        animateZoomIn(songLabel, duration: 1.5)
+    }
+
+    // MARK: - UIKit Animations (Spring replacements)
+
+    private func animateWobble(_ view: UIView, duration: TimeInterval) {
+        let animation = CAKeyframeAnimation(keyPath: "transform.rotation.z")
+        animation.values = [0, -0.05, 0.05, -0.03, 0.03, 0]
+        animation.keyTimes = [0, 0.2, 0.4, 0.6, 0.8, 1]
+        animation.duration = duration
+        view.layer.add(animation, forKey: "wobble")
+    }
+
+    private func animateFlash(_ view: UIView, repeatCount: Int) {
+        UIView.animateKeyframes(withDuration: 0.5 * Double(repeatCount), delay: 0) {
+            for i in 0..<repeatCount {
+                let start = Double(i) / Double(repeatCount)
+                let half = 0.5 / Double(repeatCount)
+                UIView.addKeyframe(withRelativeStartTime: start, relativeDuration: half) {
+                    view.alpha = 0
+                }
+                UIView.addKeyframe(withRelativeStartTime: start + half, relativeDuration: half) {
+                    view.alpha = 1
+                }
+            }
+        }
+    }
+
+    private func animateZoomIn(_ view: UIView, duration: TimeInterval) {
+        view.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0) {
+            view.transform = .identity
+        }
     }
 
     func createNowPlayingAnimation() {
@@ -743,37 +814,3 @@ class NowPlayingViewController: BaseController {
     }
 }
 
-extension NowPlayingViewController: FRadioPlayerObserver {
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, playerStateDidChange state: FRadioPlayer.State) {
-        Task { @MainActor in
-            playerStateDidChange(state, animate: true)
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, playbackStateDidChange state: FRadioPlayer.PlaybackState) {
-        Task { @MainActor in
-            playbackStateDidChange(state, animate: true)
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, metadataDidChange metadata: FRadioPlayer.Metadata?) {
-        Task { @MainActor in
-            updateLabels()
-        }
-    }
-
-    nonisolated func radioPlayer(_ player: FRadioPlayer, artworkDidChange artworkURL: URL?) {
-        Task { @MainActor in
-            updateTrackArtwork()
-        }
-    }
-
-}
-
-extension NowPlayingViewController: StationsManagerObserver {
-
-    func stationsManager(_ manager: StationsManager, stationDidChange station: RadioStation?) {
-        stationDidChange()
-    }
-}

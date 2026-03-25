@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Spring
 
 @MainActor
 protocol PopUpMenuViewControllerDelegate: AnyObject {
@@ -53,8 +52,8 @@ class PopUpMenuViewController: UIViewController {
         return button
     }()
 
-    private let logoImageView: SpringImageView = {
-        let iv = SpringImageView(image: UIImage(named: "swift-radio-black"))
+    private let logoImageView: UIImageView = {
+        let iv = UIImageView(image: UIImage(named: "swift-radio-black"))
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.widthAnchor.constraint(equalToConstant: 180).isActive = true
@@ -62,8 +61,8 @@ class PopUpMenuViewController: UIViewController {
         return iv
     }()
 
-    private lazy var aboutButton: SpringButton = {
-        let button = SpringButton(type: .system)
+    private lazy var aboutButton: UIButton = {
+        let button = UIButton(type: .system)
         button.setTitle("About", for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body)
         button.backgroundColor = UIColor(red: 0.247, green: 0.563, blue: 0.811, alpha: 1)
@@ -75,8 +74,8 @@ class PopUpMenuViewController: UIViewController {
         return button
     }()
 
-    private lazy var websiteButton: SpringButton = {
-        let button = SpringButton(type: .system)
+    private lazy var websiteButton: UIButton = {
+        let button = UIButton(type: .system)
         button.setTitle("Website", for: .normal)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body)
         button.backgroundColor = UIColor(red: 0.206, green: 0.492, blue: 0.709, alpha: 1)
@@ -199,19 +198,26 @@ class PopUpMenuViewController: UIViewController {
         view.accessibilityViewIsModal = true
 
         // Animations
-        logoImageView.autostart = true
-        logoImageView.animation = "zoomIn"
-        logoImageView.delay = 0.3
+        animateZoomIn(logoImageView, delay: 0.3)
+        animateSlide(aboutButton, fromRight: false, delay: 0.6)
+        animateSlide(websiteButton, fromRight: true, delay: 0.6)
+    }
 
-        aboutButton.autostart = true
-        aboutButton.animation = "slideRight"
-        aboutButton.delay = 0.6
-        aboutButton.damping = 1
+    // MARK: - Animations
 
-        websiteButton.autostart = true
-        websiteButton.animation = "slideLeft"
-        websiteButton.delay = 0.6
-        websiteButton.damping = 1
+    private func animateZoomIn(_ view: UIView, delay: TimeInterval) {
+        view.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+        UIView.animate(withDuration: 0.5, delay: delay, usingSpringWithDamping: 1, initialSpringVelocity: 0) {
+            view.transform = .identity
+        }
+    }
+
+    private func animateSlide(_ view: UIView, fromRight: Bool, delay: TimeInterval) {
+        let offset: CGFloat = fromRight ? 300 : -300
+        view.transform = CGAffineTransform(translationX: offset, y: 0)
+        UIView.animate(withDuration: 0.5, delay: delay, usingSpringWithDamping: 1, initialSpringVelocity: 0) {
+            view.transform = .identity
+        }
     }
 
     // MARK: - Actions

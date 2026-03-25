@@ -7,22 +7,21 @@
 //
 
 import UIKit
-import NVActivityIndicatorView
 
 class NowPlayingView: UIView {
-    
+
     var tapHandler: (() -> Void)?
-    
+
     private static let resetTitle = "Choose a station above to begin..."
-    
-    private let animationView: NVActivityIndicatorView = {
-        let activityIndicatorView = NVActivityIndicatorView(frame: .zero, type: .audioEqualizer, color: .white, padding: nil)
-        activityIndicatorView.isAccessibilityElement = false
+
+    private let animationView: AudioEqualizerView = {
+        let view = AudioEqualizerView()
+        view.isAccessibilityElement = false
         NSLayoutConstraint.activate([
-            activityIndicatorView.widthAnchor.constraint(equalToConstant: 30),
-            activityIndicatorView.heightAnchor.constraint(equalToConstant: 20)
+            view.widthAnchor.constraint(equalToConstant: 30),
+            view.heightAnchor.constraint(equalToConstant: 20)
         ])
-        return activityIndicatorView
+        return view
     }()
     
     private let nowPlayingButton: UIButton = {

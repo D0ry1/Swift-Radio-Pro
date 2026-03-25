@@ -1,0 +1,12 @@
+{
+  "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/NowPlayingWidget/NowPlayingWidgetBundle.swift" : {
+    "abi-baseline-json" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget.abi.json",
+    "const-values" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.swiftconstvalues",
+    "dependencies" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.d",
+    "diagnostics" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.dia",
+    "objc-header" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-Swift.h",
+    "swiftdoc" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget.swiftdoc",
+    "swiftmodule" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget.swiftmodule",
+    "swiftsourceinfo" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget.swiftsourceinfo"
+  }
+}

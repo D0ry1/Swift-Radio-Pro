@@ -1,0 +1,26 @@
+{
+  "" : {
+    "const-values" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.swiftconstvalues",
+    "dependencies" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.d",
+    "diagnostics" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.dia",
+    "emit-module-dependencies" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary-emit-module.dia",
+    "pch" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidget-primary.swiftdeps"
+  },
+  "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/NowPlayingWidget/NowPlayingLiveActivity.swift" : {
+    "index-unit-output-path" : "/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingLiveActivity.o",
+    "llvm-bc" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingLiveActivity.bc",
+    "object" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingLiveActivity.o"
+  },
+  "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/NowPlayingWidget/NowPlayingWidgetBundle.swift" : {
+    "index-unit-output-path" : "/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidgetBundle.o",
+    "llvm-bc" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidgetBundle.bc",
+    "object" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingWidgetBundle.o"
+  },
+  "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/SwiftRadio/Model/NowPlayingAttributes.swift" : {
+    "index-unit-output-path" : "/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingAttributes.o",
+    "llvm-bc" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingAttributes.bc",
+    "object" : "/Users/derek/Desktop/Github/Radio Player/Swift-Radio-Pro/build/SwiftRadio.build/Release-iphoneos/NowPlayingWidget.build/Objects-normal/arm64/NowPlayingAttributes.o"
+  }
+}

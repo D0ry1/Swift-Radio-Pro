@@ -46,6 +46,18 @@ class PreviousShowsViewController: BaseController {
         return indicator
     }()
 
+    private let errorLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .preferredFont(forTextStyle: .body)
+        label.adjustsFontForContentSizeCategory = true
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     override func loadView() {
         super.loadView()
         setupViews()
@@ -64,6 +76,7 @@ class PreviousShowsViewController: BaseController {
         tableView.addSubview(refreshControl)
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
+        view.addSubview(errorLabel)
 
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
@@ -72,17 +85,23 @@ class PreviousShowsViewController: BaseController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
 
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32)
         ])
     }
 
     private func loadEpisodes() {
+        errorLabel.isHidden = true
         activityIndicator.startAnimating()
         Task {
             do {
                 episodes = try await DataManager.getOnDemandEpisodes()
             } catch {
-                if Config.debugLog { print("Error loading on-demand episodes: \(error)") }
+                showError(error)
             }
             activityIndicator.stopAnimating()
             tableView.reloadData()
@@ -93,15 +112,23 @@ class PreviousShowsViewController: BaseController {
     }
 
     @objc private func refresh() {
+        errorLabel.isHidden = true
         Task {
             do {
                 episodes = try await DataManager.getOnDemandEpisodes()
             } catch {
-                if Config.debugLog { print("Error refreshing on-demand episodes: \(error)") }
+                showError(error)
             }
             refreshControl.endRefreshing()
             tableView.reloadData()
         }
+    }
+
+    private func showError(_ error: Error) {
+        guard episodes.isEmpty else { return }
+        errorLabel.text = error.localizedDescription
+        errorLabel.isHidden = false
+        UIAccessibility.post(notification: .screenChanged, argument: errorLabel)
     }
 }
 
