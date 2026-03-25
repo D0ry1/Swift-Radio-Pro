@@ -46,7 +46,7 @@ class MainCoordinator: NavigationCoordinator {
     }
     
     func openAbout(in viewController: UIViewController) {
-        let aboutController = Storyboard.viewController as AboutViewController
+        let aboutController = AboutViewController()
         aboutController.delegate = self
         viewController.present(aboutController, animated: true)
     }
@@ -73,14 +73,14 @@ extension MainCoordinator: LoaderControllerDelegate {
 extension MainCoordinator: StationsViewControllerDelegate {
     
     func pushNowPlayingController(_ stationsViewController: StationsViewController, newStation: Bool) {
-        let nowPlayingController = Storyboard.viewController as NowPlayingViewController
+        let nowPlayingController = NowPlayingViewController()
         nowPlayingController.delegate = self
         nowPlayingController.isNewStation = newStation
         navigationController.pushViewController(nowPlayingController, animated: true)
     }
-    
+
     func presentPopUpMenuController(_ stationsViewController: StationsViewController) {
-        let popUpMenuController = Storyboard.viewController as PopUpMenuViewController
+        let popUpMenuController = PopUpMenuViewController()
         popUpMenuController.delegate = self
         navigationController.present(popUpMenuController, animated: true)
     }
@@ -95,8 +95,7 @@ extension MainCoordinator: StationsViewControllerDelegate {
 extension MainCoordinator: NowPlayingViewControllerDelegate {
     
     func didTapInfoButton(_ nowPlayingViewController: NowPlayingViewController, station: RadioStation) {
-        let infoController = Storyboard.viewController as InfoDetailViewController
-        infoController.currentStation = station
+        let infoController = InfoDetailViewController(station: station)
         navigationController.pushViewController(infoController, animated: true)
     }
     
@@ -140,7 +139,7 @@ extension MainCoordinator: PreviousShowsViewControllerDelegate {
         let manager = StationsManager.shared
         manager.set(station: station)
 
-        let nowPlayingController = Storyboard.viewController as NowPlayingViewController
+        let nowPlayingController = NowPlayingViewController()
         nowPlayingController.delegate = self
         nowPlayingController.isNewStation = true
         navigationController.pushViewController(nowPlayingController, animated: true)

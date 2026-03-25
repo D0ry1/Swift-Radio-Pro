@@ -20,22 +20,142 @@ protocol NowPlayingViewControllerDelegate: AnyObject {
 }
 
 @MainActor
-class NowPlayingViewController: UIViewController {
+class NowPlayingViewController: BaseController {
 
     weak var delegate: NowPlayingViewControllerDelegate?
 
-    // MARK: - IB UI
+    // MARK: - UI
 
-    @IBOutlet weak var albumHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var albumImageView: SpringImageView!
-    @IBOutlet weak var artistLabel: UILabel!
-    @IBOutlet weak var playingButton: UIButton!
-    @IBOutlet weak var songLabel: SpringLabel!
-    @IBOutlet weak var stationDescLabel: UILabel!
-    @IBOutlet weak var volumeParentView: UIView!
-    @IBOutlet weak var previousButton: UIButton!
-    @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var airPlayView: UIView!
+    private let albumImageView: SpringImageView = {
+        let iv = SpringImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        return iv
+    }()
+
+    private var albumHeightConstraint: NSLayoutConstraint!
+
+    private let stationDescLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "AvenirNext-Regular", size: 15)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.heightAnchor.constraint(equalToConstant: 21).isActive = true
+        return label
+    }()
+
+    private lazy var playingButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "btn-play"), for: .normal)
+        button.setImage(UIImage(named: "btn-pause"), for: .selected)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        button.addTarget(self, action: #selector(playingPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var previousButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "btn-previous"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        button.addTarget(self, action: #selector(previousPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var stopButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "btn-stop"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        button.addTarget(self, action: #selector(stopPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var nextButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "btn-next"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        button.addTarget(self, action: #selector(nextPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private let songLabel: SpringLabel = {
+        let label = SpringLabel()
+        label.font = .preferredFont(forTextStyle: .title1)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.minimumScaleFactor = 0.5
+        label.adjustsFontSizeToFitWidth = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let artistLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .title3)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.minimumScaleFactor = 0.5
+        label.adjustsFontSizeToFitWidth = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let volumeParentView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .clear
+        v.alpha = 0.5
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        return v
+    }()
+
+    private let airPlayView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .gray
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.widthAnchor.constraint(equalToConstant: 42).isActive = true
+        v.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        return v
+    }()
+
+    private lazy var companyButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "logo"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        button.addTarget(self, action: #selector(handleCompanyButton), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var shareButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "share"), for: .normal)
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 26).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 26).isActive = true
+        button.addTarget(self, action: #selector(shareButtonPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var infoButton: UIButton = {
+        let button = UIButton(type: .infoLight)
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 22).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        button.addTarget(self, action: #selector(infoButtonPressed), for: .touchUpInside)
+        return button
+    }()
 
     // MARK: - Properties
 
@@ -86,10 +206,125 @@ class NowPlayingViewController: UIViewController {
     private let volumeTopDefault: CGFloat = 12
     private let volumeTopWithScrub: CGFloat = 56
 
+    // References to stacks for scrub bar layout
+    private var controlsStack: UIStackView!
+    private var volumeStack: UIStackView!
+
     deinit {
         if let observer = timeObserver {
             player.avPlayer?.removeTimeObserver(observer)
         }
+    }
+
+    // MARK: - Init
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Layout
+
+    override func setupViews() {
+        super.setupViews()
+
+        // Album art
+        albumHeightConstraint = albumImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 180)
+        NSLayoutConstraint.activate([
+            albumImageView.widthAnchor.constraint(equalTo: albumImageView.heightAnchor),
+            albumHeightConstraint
+        ])
+
+        // Controls stack: [prev, play, stop, next]
+        controlsStack = UIStackView(arrangedSubviews: [previousButton, playingButton, stopButton, nextButton])
+        controlsStack.spacing = 12
+        controlsStack.translatesAutoresizingMaskIntoConstraints = false
+
+        // Volume stack: [vol-min, volume view, vol-max]
+        let volMinImage = UIImageView(image: UIImage(named: "vol-min"))
+        volMinImage.contentMode = .top
+        volMinImage.translatesAutoresizingMaskIntoConstraints = false
+        volMinImage.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        volMinImage.heightAnchor.constraint(equalToConstant: 16).isActive = true
+
+        let volMaxImage = UIImageView(image: UIImage(named: "vol-max"))
+        volMaxImage.contentMode = .top
+        volMaxImage.translatesAutoresizingMaskIntoConstraints = false
+        volMaxImage.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        volMaxImage.heightAnchor.constraint(equalToConstant: 16).isActive = true
+
+        volumeStack = UIStackView(arrangedSubviews: [volMinImage, volumeParentView, volMaxImage])
+        volumeStack.alignment = .center
+        volumeStack.spacing = 8
+        volumeStack.translatesAutoresizingMaskIntoConstraints = false
+        volumeStack.heightAnchor.constraint(equalToConstant: 60).isActive = true
+
+        // Labels stack: [song, artist]
+        let labelsStack = UIStackView(arrangedSubviews: [songLabel, artistLabel])
+        labelsStack.axis = .vertical
+        labelsStack.alignment = .center
+        labelsStack.spacing = 8
+        labelsStack.translatesAutoresizingMaskIntoConstraints = false
+
+        // Bottom bar: company button (left), AirPlay (center), share+info stack (right)
+        let rightStack = UIStackView(arrangedSubviews: [shareButton, infoButton])
+        rightStack.alignment = .bottom
+        rightStack.spacing = 10
+        rightStack.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(albumImageView)
+        view.addSubview(stationDescLabel)
+        view.addSubview(controlsStack)
+        view.addSubview(volumeStack)
+        view.addSubview(labelsStack)
+        view.addSubview(companyButton)
+        view.addSubview(airPlayView)
+        view.addSubview(rightStack)
+
+        let safeArea = view.safeAreaLayoutGuide
+
+        let vTop = volumeStack.topAnchor.constraint(equalTo: controlsStack.bottomAnchor, constant: volumeTopDefault)
+        volumeTopConstraint = vTop
+
+        NSLayoutConstraint.activate([
+            // Album art
+            albumImageView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 37),
+            albumImageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 70),
+            albumImageView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -70),
+
+            // Station desc - overlapping album bottom
+            stationDescLabel.topAnchor.constraint(equalTo: albumImageView.bottomAnchor, constant: -32),
+            stationDescLabel.leadingAnchor.constraint(equalTo: albumImageView.leadingAnchor),
+            stationDescLabel.trailingAnchor.constraint(equalTo: albumImageView.trailingAnchor),
+
+            // Controls
+            controlsStack.topAnchor.constraint(equalTo: albumImageView.bottomAnchor, constant: 30),
+            controlsStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            // Volume
+            vTop,
+            volumeStack.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 12),
+            volumeStack.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -12),
+
+            // Labels
+            labelsStack.topAnchor.constraint(equalTo: volumeStack.bottomAnchor, constant: 12),
+            labelsStack.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 12),
+            labelsStack.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -12),
+
+            // Bottom bar
+            companyButton.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 12),
+            companyButton.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
+
+            airPlayView.centerXAnchor.constraint(equalTo: labelsStack.centerXAnchor),
+            airPlayView.bottomAnchor.constraint(equalTo: rightStack.bottomAnchor, constant: 10),
+
+            rightStack.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -12),
+            rightStack.centerYAnchor.constraint(equalTo: companyButton.centerYAnchor)
+        ])
     }
 
     // MARK: - ViewDidLoad
@@ -112,7 +347,6 @@ class NowPlayingViewController: UIViewController {
         self.title = manager.currentStation?.name
 
         // Set UI
-
         stationDescLabel.text = manager.currentStation?.desc
         stationDescLabel.isHidden = player.currentMetadata != nil
 
@@ -211,19 +445,6 @@ class NowPlayingViewController: UIViewController {
         view.addSubview(scrubBar)
         view.addSubview(currentTimeLabel)
         view.addSubview(durationLabel)
-
-        // Position scrub bar between the controls and the volume slider
-        let volumeStack = volumeParentView.superview!
-        let controlsStack = playingButton.superview!
-
-        // Find the storyboard constraint: volumeStack.top == controlsStack.bottom + 12
-        for constraint in view.constraints {
-            if constraint.firstItem === volumeStack && constraint.firstAttribute == .top &&
-               constraint.secondItem === controlsStack && constraint.secondAttribute == .bottom {
-                volumeTopConstraint = constraint
-                break
-            }
-        }
 
         NSLayoutConstraint.activate([
             scrubBar.leadingAnchor.constraint(equalTo: volumeStack.leadingAnchor),
@@ -335,19 +556,19 @@ class NowPlayingViewController: UIViewController {
 
     // MARK: - Player Controls (Play/Pause/Volume)
 
-    @IBAction func playingPressed(_ sender: Any) {
+    @objc func playingPressed(_ sender: Any) {
         player.togglePlaying()
     }
 
-    @IBAction func stopPressed(_ sender: Any) {
+    @objc func stopPressed(_ sender: Any) {
         player.stop()
     }
 
-    @IBAction func nextPressed(_ sender: Any) {
+    @objc func nextPressed(_ sender: Any) {
         manager.setNext()
     }
 
-    @IBAction func previousPressed(_ sender: Any) {
+    @objc func previousPressed(_ sender: Any) {
         manager.setPrevious()
     }
 
@@ -507,17 +728,17 @@ class NowPlayingViewController: UIViewController {
         animate ? nowPlayingImageView.startAnimating() : nowPlayingImageView.stopAnimating()
     }
 
-    @IBAction func infoButtonPressed(_ sender: UIButton) {
+    @objc func infoButtonPressed(_ sender: UIButton) {
         guard let station = manager.currentStation else { return }
         delegate?.didTapInfoButton(self, station: station)
     }
 
-    @IBAction func shareButtonPressed(_ sender: UIButton) {
+    @objc func shareButtonPressed(_ sender: UIButton) {
         guard let station = manager.currentStation else { return }
         delegate?.didTapShareButton(self, station: station, artworkURL: player.currentArtworkURL)
     }
 
-    @IBAction func handleCompanyButton(_ sender: Any) {
+    @objc func handleCompanyButton(_ sender: Any) {
         delegate?.didTapCompanyButton(self)
     }
 }

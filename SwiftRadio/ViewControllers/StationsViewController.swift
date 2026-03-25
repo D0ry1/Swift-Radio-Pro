@@ -46,8 +46,7 @@ class StationsViewController: BaseController, Handoffable {
         tableView.backgroundColor = .clear
         tableView.backgroundView = nil
         tableView.separatorStyle = .none
-        let cellNib = UINib(nibName: "NothingFoundCell", bundle: nil)
-        tableView.register(cellNib, forCellReuseIdentifier: "NothingFound")
+        tableView.register(NothingFoundCell.self)
         tableView.register(StationTableViewCell.self)
         tableView.dataSource = self
         tableView.delegate = self
@@ -250,11 +249,7 @@ extension StationsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         if manager.stations.isEmpty {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "NothingFound", for: indexPath)
-            cell.backgroundColor = .clear
-            cell.selectionStyle = .none
-            cell.isAccessibilityElement = true
-            cell.accessibilityLabel = "Loading stations"
+            let cell: NothingFoundCell = tableView.dequeueReusableCell(for: indexPath)
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(for: indexPath) as StationTableViewCell
