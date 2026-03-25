@@ -81,7 +81,7 @@ class NowPlayingViewController: UIViewController {
     }()
 
     private var isScrubbing = false
-    private var timeObserver: Any?
+    nonisolated(unsafe) private var timeObserver: Any?
     private var volumeTopConstraint: NSLayoutConstraint?
     private let volumeTopDefault: CGFloat = 12
     private let volumeTopWithScrub: CGFloat = 56

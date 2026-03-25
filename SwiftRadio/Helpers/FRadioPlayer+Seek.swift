@@ -6,6 +6,9 @@
 import AVFoundation
 import FRadioPlayer
 
+extension FRadioPlayer.State: @retroactive @unchecked Sendable {}
+extension FRadioPlayer.PlaybackState: @retroactive @unchecked Sendable {}
+
 extension FRadioPlayer {
 
     /// Access the underlying AVPlayer via Mirror reflection

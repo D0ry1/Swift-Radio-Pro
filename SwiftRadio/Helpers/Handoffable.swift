@@ -9,7 +9,7 @@
 import UIKit
 import FRadioPlayer
 
-protocol Handoffable: UIResponder {}
+@MainActor protocol Handoffable: UIResponder {}
 
 extension Handoffable {
     

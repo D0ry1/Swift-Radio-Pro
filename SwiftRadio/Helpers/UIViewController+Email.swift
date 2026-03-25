@@ -8,7 +8,7 @@
 
 import MessageUI
 
-extension MFMailComposeViewControllerDelegate where Self: UIViewController {
+@MainActor extension MFMailComposeViewControllerDelegate where Self: UIViewController {
     
     var canSendMail: Bool {
         MFMailComposeViewController.canSendMail()

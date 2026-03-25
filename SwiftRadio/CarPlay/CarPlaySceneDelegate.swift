@@ -11,7 +11,7 @@ import UIKit
 import MediaPlayer
 import FRadioPlayer
 
-class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
+@MainActor class CarPlaySceneDelegate: UIResponder, @preconcurrency CPTemplateApplicationSceneDelegate {
 
     var interfaceController: CPInterfaceController?
     private var stationListTemplate: CPListTemplate?

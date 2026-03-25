@@ -39,7 +39,7 @@ class AboutViewController: UIViewController {
 
 // MARK: - MFMailComposeViewController Delegate
 
-extension AboutViewController: MFMailComposeViewControllerDelegate {
+extension AboutViewController: @preconcurrency MFMailComposeViewControllerDelegate {
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true, completion: nil)

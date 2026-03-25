@@ -5,13 +5,13 @@
 
 import Foundation
 
-struct OnDemandEpisode: Codable {
+struct OnDemandEpisode: Codable, Sendable {
 
     let trackId: String
     let downloadUrl: String
     let media: Media
 
-    struct Media: Codable {
+    struct Media: Codable, Sendable {
         let id: String?
         let art: String?
         let title: String?

@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Storyboard<T: UIViewController> {
+@MainActor struct Storyboard<T: UIViewController> {
     
     static var storyboardName: String {
         return String(describing: T.self)
