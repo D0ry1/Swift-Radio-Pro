@@ -16,16 +16,8 @@ struct StationsManagerTests {
     // MARK: - Search
 
     @Test("Search filters stations by name (case-insensitive)")
-    @MainActor func searchFilters() async {
-        let manager = StationsManager.shared
-        let original = manager.stations
-
-        // Temporarily inject test data via fetch isn't possible,
-        // but we can test updateSearch against whatever stations are loaded.
-        // Use the search method directly with known data.
+    func searchFilters() {
         let stations = makeStations(3)
-
-        // Test the filtering logic directly
         let filtered = stations.filter { $0.name.localizedCaseInsensitiveContains("station 1") }
         #expect(filtered.count == 1)
         #expect(filtered[0].name == "Station 1")
@@ -56,7 +48,7 @@ struct StationsManagerTests {
     @Test("Next station wraps around to first")
     func nextStationWraps() {
         let stations = makeStations(3)
-        let currentIndex = 2 // last station
+        let currentIndex = 2
         let nextIndex = (currentIndex + 1 == stations.count) ? 0 : currentIndex + 1
         #expect(nextIndex == 0)
         #expect(stations[nextIndex].name == "Station 0")
@@ -65,7 +57,7 @@ struct StationsManagerTests {
     @Test("Previous station wraps around to last")
     func previousStationWraps() {
         let stations = makeStations(3)
-        let currentIndex = 0 // first station
+        let currentIndex = 0
         let previousStation = (currentIndex == 0) ? stations.last : stations[currentIndex - 1]
         #expect(previousStation?.name == "Station 2")
     }
@@ -101,7 +93,6 @@ struct StationsManagerTests {
         manager.set(station: first)
         #expect(manager.currentStation == first)
 
-        // Clean up
         manager.set(station: nil)
     }
 
@@ -127,7 +118,7 @@ struct StationsManagerTests {
         let manager = StationsManager.shared
         _ = try? await manager.fetch()
 
-        var changed = false
+        nonisolated(unsafe) var changed = false
         withObservationTracking {
             _ = manager.currentStation
         } onChange: {
@@ -141,7 +132,6 @@ struct StationsManagerTests {
         manager.set(station: first)
         #expect(changed)
 
-        // Clean up
         manager.set(station: nil)
     }
 }
